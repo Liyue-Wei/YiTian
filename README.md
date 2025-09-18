@@ -75,6 +75,6 @@ python YiTian.py
 - **[DaZi_Trial.py](DaZi_Trial.py)**: 專案的核心邏輯，包含了手部檢測、鍵盤監聽、指法校驗和視覺化渲染的全部功能。
 - **[install.py](install.py)**: 用於安裝專案所需依賴的腳本。
 - **[LICENSE](LICENSE)**: 本專案使用 GNU General Public License v3.0 授權。
-- 
+
 ---
 ### Developed by [Liyue Wei](https://github.com/Liyue-Wei) on GitHub.
