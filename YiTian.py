@@ -6,6 +6,8 @@ import threading
 import numpy as np
 import tkinter as tk  
 
+global finger_var, keyboard_var, guide_var, topmost_var, cam_var, res_var
+
 def init_screen():
     win = tk.Tk()
     win.title("YiTian v0.1 Beta")
@@ -34,6 +36,7 @@ def init_screen():
                               highlightcolor="white")
     finger_cb.pack(anchor="w", pady=10)
     widgets.append(finger_cb)
+    finger_var.set(True)
 
     keyboard_var = tk.BooleanVar()
     keyboard_cb = tk.Checkbutton(left_frame, text="鍵盤字幕", variable=keyboard_var, font=("DFKai-SB", 18), 
@@ -42,6 +45,7 @@ def init_screen():
                                 highlightcolor="white")
     keyboard_cb.pack(anchor="w", pady=10)
     widgets.append(keyboard_cb)
+    keyboard_var.set(True)
 
     guide_var = tk.BooleanVar()
     guide_cb = tk.Checkbutton(left_frame, text="指引字幕", variable=guide_var, font=("DFKai-SB", 18), 
@@ -50,6 +54,7 @@ def init_screen():
                              highlightcolor="white")
     guide_cb.pack(anchor="w", pady=10)
     widgets.append(guide_cb)
+    guide_var.set(True)
 
     topmost_var = tk.BooleanVar()
     topmost_cb = tk.Checkbutton(left_frame, text="保持置頂", variable=topmost_var, font=("DFKai-SB", 18), 
@@ -58,6 +63,7 @@ def init_screen():
                                highlightcolor="white")
     topmost_cb.pack(anchor="w", pady=10)
     widgets.append(topmost_cb)
+    topmost_var.set(True)
 
     right_frame = tk.Frame(frame, bg="#0000A0")
     right_frame.grid(row=1, column=2, sticky="nsew", padx=(20, 40), pady=10)
@@ -157,6 +163,26 @@ def init_screen():
         w.bind("<FocusIn>", on_focus_in)
         w.bind("<FocusOut>", on_focus_out)
         w.configure(takefocus=True)
+
+    def navigate(event):
+        try:
+            current_widget = win.focus_get()
+            current_index = widgets.index(current_widget)
+            
+            if event.keysym == 'Down':
+                next_index = (current_index + 1) % len(widgets)
+            elif event.keysym == 'Up':
+                next_index = (current_index - 1 + len(widgets)) % len(widgets)
+            else:
+                return
+
+            widgets[next_index].focus_set()
+        except (ValueError, AttributeError):
+            if widgets:
+                widgets[0].focus_set()
+
+    win.bind('<Down>', navigate)
+    win.bind('<Up>', navigate)
 
     widgets[0].focus_set()  
 
