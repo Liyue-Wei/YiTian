@@ -10,7 +10,7 @@ global finger_var, keyboard_var, guide_var, topmost_var, cam_var, res_var
 
 def init_screen():
     win = tk.Tk()
-    win.title("YiTian v0.1 Beta")
+    win.title("YiTian v1.0 Beta")
     win.configure(bg="#0000A0")  
     win.resizable(False, False)
 
@@ -21,7 +21,7 @@ def init_screen():
     frame = tk.Frame(win, bg="#0000A0", bd=6, relief="ridge", highlightbackground="white", highlightcolor="white", highlightthickness=4)
     frame.place(relx=0.05, rely=0.08, relwidth=0.9, relheight=0.84)
 
-    title_label = tk.Label(frame, text="倚天盲打輔助 v0.1 Beta", font=("DFKai-SB", 28, "bold"), bg="#0000A0", fg="white")
+    title_label = tk.Label(frame, text="倚天盲打輔助", font=("DFKai-SB", 28, "bold"), bg="#0000A0", fg="white")
     title_label.grid(row=0, column=0, columnspan=3, pady=30)
 
     widgets = []
@@ -188,5 +188,9 @@ def init_screen():
 
     win.mainloop()
 
+def main():
+    pass
+
 if __name__ == "__main__":
     init_screen()
+    main()
