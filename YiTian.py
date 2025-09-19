@@ -181,6 +181,9 @@ def init_screen():
             if widgets:
                 widgets[0].focus_set()
 
+    def btn_isPressed():
+        pass
+
     win.bind('<Down>', navigate)
     win.bind('<Up>', navigate)
 
