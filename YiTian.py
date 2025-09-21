@@ -6,8 +6,6 @@ import threading
 import numpy as np
 import tkinter as tk  
 
-global finger_var, keyboard_var, guide_var, topmost_var, cam_var, res_var
-
 def init_screen():
     win = tk.Tk()
     win.title("YiTian v1.0 Beta")
@@ -18,6 +16,9 @@ def init_screen():
     y_COORD = int(win.winfo_screenheight() / 2 - 300)
     win.geometry(f"800x600+{x_COORD}+{y_COORD}")
 
+    def btnPressed():
+        pass
+    
     frame = tk.Frame(win, bg="#0000A0", bd=6, relief="ridge", highlightbackground="white", highlightcolor="white", highlightthickness=4)
     frame.place(relx=0.05, rely=0.08, relwidth=0.9, relheight=0.84)
 
@@ -92,7 +93,8 @@ def init_screen():
         frame, text="開始", font=("DFKai-SB", 20, "bold"),
         bg="#0000A0", fg="white", activebackground="white",
         activeforeground="#0000A0", bd=3, relief="ridge",
-        highlightthickness=2, highlightbackground="#0000A0", highlightcolor="white"
+        highlightthickness=2, highlightbackground="#0000A0", 
+        highlightcolor="white", command=btnPressed
     )
     btn.grid(row=2, column=0, columnspan=3, pady=40)
     widgets.append(btn)
@@ -180,9 +182,6 @@ def init_screen():
         except (ValueError, AttributeError):
             if widgets:
                 widgets[0].focus_set()
-
-    def btn_isPressed():
-        pass
 
     win.bind('<Down>', navigate)
     win.bind('<Up>', navigate)
