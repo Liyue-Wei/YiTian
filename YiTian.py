@@ -2,9 +2,9 @@ import cv2
 import mediapipe as mp
 import time
 from pynput import keyboard
+import tkinter as tk
+from tkinter import ttk # 匯入 ttk 以使用進度條
 import threading
-import numpy as np
-import tkinter as tk  
 
 def init_screen():
     win = tk.Tk()
@@ -16,8 +16,17 @@ def init_screen():
     y_COORD = int(win.winfo_screenheight() / 2 - 300)
     win.geometry(f"800x600+{x_COORD}+{y_COORD}")
 
+    settings = {}
+
     def btnPressed():
-        pass
+        settings['finger'] = finger_var.get()
+        settings['keyboard'] = keyboard_var.get()
+        settings['guide'] = guide_var.get()
+        settings['topmost'] = topmost_var.get()
+        settings['camera_index'] = int(cam_var.get())
+        res_w, res_h = map(int, res_var.get().split('x'))
+        settings['resolution'] = (res_w, res_h)
+        win.destroy()
     
     frame = tk.Frame(win, bg="#0000A0", bd=6, relief="ridge", highlightbackground="white", highlightcolor="white", highlightthickness=4)
     frame.place(relx=0.05, rely=0.08, relwidth=0.9, relheight=0.84)
@@ -185,14 +194,23 @@ def init_screen():
 
     win.bind('<Down>', navigate)
     win.bind('<Up>', navigate)
-
     widgets[0].focus_set()  
-
     win.mainloop()
+    return settings
 
-def main():
-    pass
+
+def main(settings):
+    print(settings)
+    
+    # 例如，可以這樣取得攝影機索引和解析度
+    camera_index = settings['camera_index']
+    width, height = settings['resolution']
+    
+    print(f"將使用攝影機 {camera_index}，解析度為 {width}x{height}")
+    # ... 在這裡加入您主要的 OpenCV 視覺處理程式碼 ...
+
 
 if __name__ == "__main__":
-    init_screen()
-    main()
+    user_settings = init_screen()
+    if user_settings:
+        main(user_settings)
