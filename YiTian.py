@@ -1,10 +1,9 @@
 import cv2
 import mediapipe as mp
+import numpy as np
 import time
 from pynput import keyboard
 import tkinter as tk
-from tkinter import ttk # 匯入 ttk 以使用進度條
-import threading
 
 def init_screen():
     win = tk.Tk()
@@ -94,7 +93,7 @@ def init_screen():
     res_menu = tk.OptionMenu(right_frame, res_var, "640x480", "1280x720", "1920x1080")
     res_menu.config(font=("DFKai-SB", 16), bg="#0000A0", fg="white", activebackground="#0000A0", activeforeground="white", highlightthickness=2, highlightbackground="#0000A0", highlightcolor="white")
     res_menu["menu"].config(bg="#0000A0", fg="white")
-    res_var.set("640x480")
+    res_var.set("1280x720")
     res_menu.pack(anchor="w", pady=10)
     widgets.append(res_menu)
 
@@ -201,14 +200,56 @@ def init_screen():
 
 def main(settings):
     print(settings)
-    
-    # 例如，可以這樣取得攝影機索引和解析度
-    camera_index = settings['camera_index']
-    width, height = settings['resolution']
-    
-    print(f"將使用攝影機 {camera_index}，解析度為 {width}x{height}")
-    # ... 在這裡加入您主要的 OpenCV 視覺處理程式碼 ...
+    cam_index = settings["camera_index"]
+    width, height = settings["resolution"]
 
+    try:
+        window_name = "YiTian v1.0 Beta"
+        cap = cv2.VideoCapture(cam_index)
+        if not cap.isOpened():
+            raise ConnectionError(f"無法開啟攝影機 {cam_index}")
+
+        print(f"正在嘗試設定解析度為: {width}x{height}...")
+        cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
+        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
+
+        actual_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        actual_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        print(f"攝影機實際解析度為: {actual_width}x{actual_height}")
+        if actual_width != width or actual_height != height:
+            raise ValueError(f"錯誤：攝影機不支援所選解析度 {width}x{height}。")
+
+        print("攝影機已成功啟動。") 
+        start_time = time.time() # 記錄主迴圈開始的時間
+
+        while True:
+            success, frame = cap.read()
+            if not success:
+                break
+
+            if time.time() - start_time < 3:
+                text = "Press ESC to exit."
+                font = cv2.FONT_HERSHEY_SIMPLEX
+                font_scale = 1.5
+                thickness = 2
+                text_size, _ = cv2.getTextSize(text, font, font_scale, thickness)
+                text_x = (frame.shape[1] - text_size[0]) // 2
+                text_y = (frame.shape[0] + text_size[1]) // 2
+                cv2.putText(frame, text, (text_x, text_y), font, font_scale, (255, 255, 255), thickness)
+
+            cv2.imshow(window_name, frame)
+            if cv2.waitKey(1) & 0xFF == 27: 
+                break
+
+            if settings.get('topmost'):
+                cv2.setWindowProperty(window_name, cv2.WND_PROP_TOPMOST, 1)
+        
+        cap.release()
+        cv2.destroyAllWindows()
+
+    except Exception as e:
+        print(f"開啟攝影機時發生錯誤: {e}, 程式已終止。\n")
+        return
 
 if __name__ == "__main__":
     user_settings = init_screen()
