@@ -192,12 +192,6 @@ class TypingTrainerApp:
 
     def _draw_overlay(self, image, results):
         """在影像上繪製所有UI元素"""
-        # 繪製FPS
-        c_time = time.time()
-        fps = 1 / (c_time - self.p_time) if self.p_time > 0 else 0
-        self.p_time = c_time
-        cv2.putText(image, f"FPS: {int(fps)}", (10, 40), cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 255), 2)
-
         if not self.is_calibrated:
             # 繪製校準UI
             target_key = self.calibration_anchors[self.current_anchor_index]
