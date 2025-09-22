@@ -54,21 +54,55 @@ class TypingCorrector:
         }
 
     def generate_key_map_from_anchors(self, anchor_points):
-        if 'q' not in anchor_points or 'p' not in anchor_points:
-            print("锚点不足，无法生成键盘映射")
+        # 檢查是否已收集到所有四個錨點
+        required_keys = ['q', 'p', 'z', 'm']
+        if not all(key in anchor_points for key in required_keys):
+            print("錨點不足，無法生成鍵盤映射")
             return False
-        q_pos, p_pos = anchor_points['q'], anchor_points['p']
-        row_width = p_pos[0] - q_pos[0]
-        key_width = row_width / 9
-        key_height = key_width * 1.1
-        for i, row_str in enumerate(self.key_layout):
-            row_offset_x = i * key_width * 0.5
-            row_offset_y = i * key_height
-            for j, char in enumerate(row_str):
-                x = int(q_pos[0] + row_offset_x + j * key_width)
-                y = int(q_pos[1] + row_offset_y)
-                self.key_map[char] = (x, y)
-        print("键盘映射生成成功！")
+
+        # 1. 定義更精確的理想鍵盤佈局源座標 (src_pts)
+        # 單位：1.0 代表一個標準按鍵的寬度或高度
+        # QWERTY 行: 'q' 在 (0, 0), 'p' 在 (9, 0)
+        # ASDF 行: 'a' 在 (0.25, 1), 'l' 在 (8.25, 1)
+        # ZXCV 行: 'z' 在 (0.75, 2), 'm' 在 (6.75, 2)
+        src_pts = np.float32([
+            [0, 0],      # q
+            [9, 0],      # p
+            [0.75, 2],   # z (更精確的偏移)
+            [6.75, 2]    # m (更精確的偏移)
+        ])
+
+        # 2. 獲取實際偵測到的目標座標 (dst_pts)
+        dst_pts = np.float32([
+            anchor_points['q'],
+            anchor_points['p'],
+            anchor_points['z'],
+            anchor_points['m']
+        ])
+
+        # 3. 計算透視變換矩陣
+        matrix = cv2.getPerspectiveTransform(src_pts, dst_pts)
+
+        # 4. 為所有按鍵生成理想座標，然後進行變換
+        self.key_map = {}
+        # 根據更精確的偏移量，定義每一排按鍵在理想網格中的位置
+        key_ideal_coords = {
+            "qwertyuiop": [(i, 0) for i in range(10)],
+            "asdfghjkl": [(i + 0.25, 1) for i in range(9)], # A行偏移0.25
+            "zxcvbnm": [(i + 0.75, 2) for i in range(7)]   # Z行偏移0.75
+        }
+
+        for row_str, coords in key_ideal_coords.items():
+            # 將理想座標轉換為numpy array
+            ideal_pts = np.float32(coords).reshape(-1, 1, 2)
+            # 使用變換矩陣計算實際座標
+            transformed_pts = cv2.perspectiveTransform(ideal_pts, matrix)
+            
+            for i, char in enumerate(row_str):
+                # 將計算出的浮點座標轉換為整數
+                self.key_map[char] = tuple(transformed_pts[i][0].astype(int))
+
+        print("四點校準成功，鍵盤映射已優化！")
         return True
 
     def _generate_finger_map(self):
@@ -144,7 +178,8 @@ class TypingTrainerApp:
         self.calibration_message_shown = False # 追蹤校準訊息是否顯示過
         
         # 校準相關
-        self.calibration_anchors = ['q', 'p']
+        # 將校準錨點改為四個
+        self.calibration_anchors = ['q', 'p', 'z', 'm']
         self.calibration_points = {}
         self.current_anchor_index = 0
 
@@ -236,7 +271,7 @@ class TypingTrainerApp:
             print(e)
             return
 
-        window_name = "Typing Corrector"
+        window_name = "YiTian v1.0 Beta"
         while self.cap.isOpened():
             success, image = self.cap.read()
             if not success: break
