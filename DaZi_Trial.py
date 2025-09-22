@@ -99,7 +99,7 @@ class TypingCorrector:
                 break
         if correct_finger_lm:
             dist = ((correct_finger_lm.x * frame_width - key_pos[0])**2 + (correct_finger_lm.y * frame_height - key_pos[1])**2)**0.5
-            if dist < 30: return "Correct", correct_finger_name
+            if dist < 25: return "Correct", correct_finger_name
         min_dist, actual_finger_name = float('inf'), "Unknown"
         for i, hand_lms in enumerate(hands_landmarks):
             hand_type = handedness[i].classification[0].label.upper()
@@ -109,7 +109,10 @@ class TypingCorrector:
                     dist_actual = ((lm.x * frame_width - key_pos[0])**2 + (lm.y * frame_height - key_pos[1])**2)**0.5
                     if dist_actual < min_dist:
                         min_dist, actual_finger_name = dist_actual, finger
-        return "Wrong", f"Should be {correct_finger_name}, but used {actual_finger_name}"
+        # 修正：如果最近的手指就是正確手指，直接視為正確
+        if actual_finger_name == correct_finger_name:
+            return "Correct", correct_finger_name
+        return ("Wrong", f"Should be {correct_finger_name}, but used {actual_finger_name}") if correct_finger_name != actual_finger_name else "correct"
 
 def get_pressing_finger_pos(results, frame_width, frame_height):
     if not results or not results.multi_hand_landmarks: return None
@@ -193,12 +196,6 @@ class TypingTrainerApp:
 
     def _draw_overlay(self, image, results):
         """在影像上繪製所有UI元素"""
-        # 繪製FPS
-        c_time = time.time()
-        fps = 1 / (c_time - self.p_time) if self.p_time > 0 else 0
-        self.p_time = c_time
-        cv2.putText(image, f"FPS: {int(fps)}", (10, 40), cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 255), 2)
-
         if not self.is_calibrated:
             # 繪製校準UI
             target_key = self.calibration_anchors[self.current_anchor_index]
@@ -212,9 +209,15 @@ class TypingTrainerApp:
             if time.time() - self.last_typed_info["time"] < 3:
                  cv2.putText(image, "Calibration Complete! Start typing.", (50, 80), cv2.FONT_HERSHEY_DUPLEX, 1.5, (0, 255, 0), 2)
             
-            if self.settings.get('keyboard', False): self.corrector.draw_keyboard(image)
-            if self.settings.get('guide', False): cv2.putText(image, "A-Z...", (50, 120), cv2.FONT_HERSHEY_SIMPLEX, 1.1, (0, 0, 0), 3)
-            if self.settings.get('finger', False): cv2.putText(image, "LP:QAZ...", (50, 160), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (80, 80, 80), 2)
+            # 根據設定決定是否顯示鍵盤、指引、手指字幕
+            if self.settings.get('keyboard', False): 
+                self.corrector.draw_keyboard(image)
+            
+            # if self.settings.get('guide', False):
+            #     cv2.putText(image, "A-Z...", (50, 120), cv2.FONT_HERSHEY_SIMPLEX, 1.1, (0, 0, 0), 3)
+            
+            # if self.settings.get('finger', False):
+            #     cv2.putText(image, "LP:QAZ...", (50, 160), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (80, 80, 80), 2)
 
             if time.time() - self.last_typed_info["time"] < 2:
                 cv2.putText(image, f"Typed: {self.last_typed_info['key']}", (50, 150), cv2.FONT_HERSHEY_DUPLEX, 2, (255, 255, 0), 3)
