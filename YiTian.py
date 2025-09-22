@@ -109,6 +109,11 @@ class TypingCorrector:
                     dist_actual = ((lm.x * frame_width - key_pos[0])**2 + (lm.y * frame_height - key_pos[1])**2)**0.5
                     if dist_actual < min_dist:
                         min_dist, actual_finger_name = dist_actual, finger
+        
+        # 修正：如果最近的手指就是正確的手指，也視為正確
+        if actual_finger_name == correct_finger_name:
+            return "Correct", correct_finger_name
+            
         return "Wrong", f"Should be {correct_finger_name}, but used {actual_finger_name}"
 
 def get_pressing_finger_pos(results, frame_width, frame_height):
@@ -136,6 +141,7 @@ class TypingTrainerApp:
         self.p_time = 0
         self.last_typed_info = {"key": "", "time": 0}
         self.correction_info = {"msg": "", "details": "", "time": 0}
+        self.calibration_message_shown = False # 追蹤校準訊息是否顯示過
         
         # 校準相關
         self.calibration_anchors = ['q', 'p']
@@ -176,6 +182,7 @@ class TypingTrainerApp:
             if self.corrector.generate_key_map_from_anchors(self.calibration_points):
                 self.is_calibrated = True
                 self.last_typed_info["time"] = time.time() # 用於校準完成後的提示
+                self.calibration_message_shown = False # 重置旗標，以便顯示訊息
             else:
                 self.current_anchor_index = 0
                 self.calibration_points = {}
@@ -202,8 +209,12 @@ class TypingTrainerApp:
                 cv2.circle(image, finger_pos, 10, (0, 255, 255), 2)
         else:
             # 繪製練習UI
-            if time.time() - self.last_typed_info["time"] < 3:
-                 cv2.putText(image, "Calibration Complete! Start typing.", (50, 80), cv2.FONT_HERSHEY_DUPLEX, 1.5, (0, 255, 0), 2)
+            # 修正：校準完成提示只顯示一次
+            if not self.calibration_message_shown:
+                cv2.putText(image, "Calibration Complete! Start typing.", (50, 80), cv2.FONT_HERSHEY_DUPLEX, 1.5, (0, 255, 0), 2)
+                # 3秒後將旗標設為True，之後不再顯示
+                if time.time() - self.last_typed_info["time"] > 3:
+                    self.calibration_message_shown = True
             
             if self.settings.get('keyboard', False): self.corrector.draw_keyboard(image)
             if self.settings.get('guide', False): cv2.putText(image, "A-Z...", (50, 120), cv2.FONT_HERSHEY_SIMPLEX, 1.1, (0, 0, 0), 3)
