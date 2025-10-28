@@ -18,6 +18,8 @@ class KeyboardListener:
             try:
                 if hasattr(key, 'char') and key.char:
                     self.last_key = key.char.lower()
+                elif key == keyboard.Key.space:
+                    self.last_key = ' '
             except AttributeError:
                 pass
 
@@ -46,7 +48,7 @@ class HandDetector:
 class TypingCorrector:
     def __init__(self):
         self.key_layout = ["qwertyuiop", "asdfghjkl", "zxcvbnm"]
-        self.key_map = {} # 将在校准后动态生成
+        self.key_map = {}
         self.finger_map = self._generate_finger_map()
         self.fingertip_indices = {
             "RIGHT_THUMB": 4, "RIGHT_INDEX": 8, "RIGHT_MIDDLE": 12, "RIGHT_RING": 16, "RIGHT_PINKY": 20,
@@ -54,25 +56,18 @@ class TypingCorrector:
         }
 
     def generate_key_map_from_anchors(self, anchor_points):
-        # 檢查是否已收集到所有四個錨點
         required_keys = ['q', 'p', 'z', 'm']
         if not all(key in anchor_points for key in required_keys):
-            print("錨點不足，無法生成鍵盤映射")
+            print("錨點不足,無法生成鍵盤映射")
             return False
 
-        # 1. 定義更精確的理想鍵盤佈局源座標 (src_pts)
-        # 單位：1.0 代表一個標準按鍵的寬度或高度
-        # QWERTY 行: 'q' 在 (0, 0), 'p' 在 (9, 0)
-        # ASDF 行: 'a' 在 (0.25, 1), 'l' 在 (8.25, 1)
-        # ZXCV 行: 'z' 在 (0.75, 2), 'm' 在 (6.75, 2)
         src_pts = np.float32([
             [0, 0],      # q
             [9, 0],      # p
-            [0.75, 2],   # z (更精確的偏移)
-            [6.75, 2]    # m (更精確的偏移)
+            [0.75, 2],   # z
+            [6.75, 2]    # m
         ])
 
-        # 2. 獲取實際偵測到的目標座標 (dst_pts)
         dst_pts = np.float32([
             anchor_points['q'],
             anchor_points['p'],
@@ -80,43 +75,45 @@ class TypingCorrector:
             anchor_points['m']
         ])
 
-        # 3. 計算透視變換矩陣
         matrix = cv2.getPerspectiveTransform(src_pts, dst_pts)
 
-        # 4. 為所有按鍵生成理想座標，然後進行變換
         self.key_map = {}
-        # 根據更精確的偏移量，定義每一排按鍵在理想網格中的位置
         key_ideal_coords = {
             "qwertyuiop": [(i, 0) for i in range(10)],
-            "asdfghjkl": [(i + 0.25, 1) for i in range(9)], # A行偏移0.25
-            "zxcvbnm": [(i + 0.75, 2) for i in range(7)]   # Z行偏移0.75
+            "asdfghjkl": [(i + 0.25, 1) for i in range(9)],
+            "zxcvbnm": [(i + 0.75, 2) for i in range(7)]
         }
 
         for row_str, coords in key_ideal_coords.items():
-            # 將理想座標轉換為numpy array
             ideal_pts = np.float32(coords).reshape(-1, 1, 2)
-            # 使用變換矩陣計算實際座標
             transformed_pts = cv2.perspectiveTransform(ideal_pts, matrix)
             
             for i, char in enumerate(row_str):
-                # 將計算出的浮點座標轉換為整數
                 self.key_map[char] = tuple(transformed_pts[i][0].astype(int))
 
-        print("四點校準成功，鍵盤映射已優化！")
+        print("四點校準成功,鍵盤映射已優化!")
         return True
 
     def _generate_finger_map(self):
         return {
-            'q': 'RIGHT_PINKY', 'a': 'RIGHT_PINKY', 'z': 'RIGHT_PINKY', 'w': 'RIGHT_RING', 's': 'RIGHT_RING', 'x': 'RIGHT_RING',
-            'e': 'RIGHT_MIDDLE', 'd': 'RIGHT_MIDDLE', 'c': 'RIGHT_MIDDLE', 'r': 'RIGHT_INDEX', 'f': 'RIGHT_INDEX', 'v': 'RIGHT_INDEX',
-            't': 'RIGHT_INDEX', 'g': 'RIGHT_INDEX', 'b': 'RIGHT_INDEX', 'y': 'LEFT_INDEX', 'h': 'LEFT_INDEX', 'n': 'LEFT_INDEX',
-            'u': 'LEFT_INDEX', 'j': 'LEFT_INDEX', 'm': 'LEFT_INDEX', 'i': 'LEFT_MIDDLE', 'k': 'LEFT_MIDDLE', 'o': 'LEFT_RING', 'l': 'LEFT_RING', 'p': 'LEFT_PINKY',
+            'q': 'RIGHT_PINKY', 'a': 'RIGHT_PINKY', 'z': 'RIGHT_PINKY', 
+            'w': 'RIGHT_RING', 's': 'RIGHT_RING', 'x': 'RIGHT_RING',
+            'e': 'RIGHT_MIDDLE', 'd': 'RIGHT_MIDDLE', 'c': 'RIGHT_MIDDLE', 
+            'r': 'RIGHT_INDEX', 'f': 'RIGHT_INDEX', 'v': 'RIGHT_INDEX',
+            't': 'RIGHT_INDEX', 'g': 'RIGHT_INDEX', 'b': 'RIGHT_INDEX', 
+            'y': 'LEFT_INDEX', 'h': 'LEFT_INDEX', 'n': 'LEFT_INDEX',
+            'u': 'LEFT_INDEX', 'j': 'LEFT_INDEX', 'm': 'LEFT_INDEX', 
+            'i': 'LEFT_MIDDLE', 'k': 'LEFT_MIDDLE', 
+            'o': 'LEFT_RING', 'l': 'LEFT_RING', 
+            'p': 'LEFT_PINKY',
         }
 
     def draw_keyboard(self, img):
         if not self.key_map: return
         for char, (x, y) in self.key_map.items():
-            cv2.putText(img, char.upper(), (x - 18, y + 18), cv2.FONT_HERSHEY_SIMPLEX, 1.1, (0, 0, 0), 3)
+            # 移除背景圓圈,只保留字母
+            cv2.putText(img, char.upper(), (x - 10, y + 10), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
 
     def check_fingering(self, typed_key, hands_landmarks, handedness, frame_width, frame_height):
         if not typed_key or typed_key not in self.key_map: return None, None
@@ -144,11 +141,110 @@ class TypingCorrector:
                     if dist_actual < min_dist:
                         min_dist, actual_finger_name = dist_actual, finger
         
-        # 修正：如果最近的手指就是正確的手指，也視為正確
         if actual_finger_name == correct_finger_name:
             return "Correct", correct_finger_name
             
         return "Wrong", f"Should be {correct_finger_name}, but used {actual_finger_name}"
+
+class ArticleManager:
+    """管理跟打文章的類別"""
+    def __init__(self):
+        self.articles = {
+            "初級": [
+                "the quick brown fox jumps over the lazy dog",
+                "pack my box with five dozen liquor jugs",
+                "how vexingly quick daft zebras jump"
+            ],
+            "中級": [
+                "programming is the art of telling another human what one wants the computer to do",
+                "practice makes perfect when learning touch typing skills",
+                "the complexity of algorithms determines the efficiency of programs"
+            ],
+            "高級": [
+                "artificial intelligence and machine learning are transforming the way we interact with technology",
+                "the complexity of modern software development requires continuous learning and adaptation",
+                "efficient data structures and algorithms are fundamental to building scalable applications"
+            ]
+        }
+        self.current_article = ""
+        self.current_position = 0
+        self.start_time = None
+        self.errors = 0
+        self.current_level = "初級"
+        self.current_index = 0
+        
+    def load_article(self, level="初級", index=0):
+        """載入指定難度的文章"""
+        if level in self.articles and index < len(self.articles[level]):
+            self.current_article = self.articles[level][index]
+            self.current_position = 0
+            self.start_time = None
+            self.errors = 0
+            self.current_level = level
+            self.current_index = index
+            return True
+        return False
+    
+    def get_next_char(self):
+        """取得下一個要輸入的字元"""
+        if self.current_position < len(self.current_article):
+            return self.current_article[self.current_position]
+        return None
+    
+    def check_input(self, typed_char):
+        """檢查輸入是否正確"""
+        if self.start_time is None:
+            self.start_time = time.time()
+            
+        expected = self.get_next_char()
+        if expected:
+            if expected == ' ':
+                if typed_char == ' ':
+                    self.current_position += 1
+                    return True
+                else:
+                    self.errors += 1
+                    return False
+            elif typed_char.lower() == expected.lower():
+                self.current_position += 1
+                return True
+            else:
+                self.errors += 1
+                return False
+        return False
+    
+    def is_completed(self):
+        """檢查是否完成"""
+        return self.current_position >= len(self.current_article)
+    
+    def get_progress(self):
+        """取得進度百分比"""
+        if not self.current_article:
+            return 0
+        return int((self.current_position / len(self.current_article)) * 100)
+    
+    def get_statistics(self):
+        """取得統計資料"""
+        if not self.start_time:
+            return None
+        
+        elapsed_time = time.time() - self.start_time
+        wpm = (self.current_position / 5) / (elapsed_time / 60) if elapsed_time > 0 else 0
+        total_typed = self.current_position + self.errors
+        accuracy = (self.current_position / total_typed * 100) if total_typed > 0 else 0
+        
+        return {
+            "time": elapsed_time,
+            "wpm": wpm,
+            "accuracy": accuracy,
+            "errors": self.errors
+        }
+    
+    def reset(self):
+        """重置當前文章"""
+        self.current_position = 0
+        self.start_time = None
+        self.errors = 0
 
 def get_pressing_finger_pos(results, frame_width, frame_height):
     if not results or not results.multi_hand_landmarks: return None
@@ -160,6 +256,21 @@ def get_pressing_finger_pos(results, frame_width, frame_height):
                 min_z, finger_pos = lm.z, (int(lm.x * frame_width), int(lm.y * frame_height))
     return finger_pos
 
+def draw_text_with_background(image, text, pos, font, font_scale, text_color, bg_color, thickness=2, padding=10, alpha=0.7):
+    """繪製帶有背景的文字"""
+    x, y = pos
+    text_size = cv2.getTextSize(text, font, font_scale, thickness)[0]
+    text_w, text_h = text_size
+    
+    bg_rect_pt1 = (x - padding, y - text_h - padding)
+    bg_rect_pt2 = (x + text_w + padding, y + padding)
+    
+    overlay = image.copy()
+    cv2.rectangle(overlay, bg_rect_pt1, bg_rect_pt2, bg_color, -1)
+    cv2.addWeighted(overlay, alpha, image, 1 - alpha, 0, image)
+    
+    cv2.putText(image, text, (x, y), font, font_scale, text_color, thickness, cv2.LINE_AA)
+
 class TypingTrainerApp:
     def __init__(self, settings):
         self.settings = settings
@@ -170,15 +281,18 @@ class TypingTrainerApp:
         self.corrector = TypingCorrector()
         self.kb_listener = KeyboardListener()
 
-        # 狀態變數
         self.is_calibrated = False
         self.p_time = 0
         self.last_typed_info = {"key": "", "time": 0}
         self.correction_info = {"msg": "", "details": "", "time": 0}
-        self.calibration_message_shown = False # 追蹤校準訊息是否顯示過
+        self.calibration_message_shown = False
         
-        # 校準相關
-        # 將校準錨點改為四個
+        self.follow_mode = settings.get('follow_mode', False)
+        self.article_manager = ArticleManager() if self.follow_mode else None
+        
+        if self.follow_mode:
+            self.article_manager.load_article("初級", 0)
+        
         self.calibration_anchors = ['q', 'p', 'z', 'm']
         self.calibration_points = {}
         self.current_anchor_index = 0
@@ -190,7 +304,7 @@ class TypingTrainerApp:
         
         self.cap = cv2.VideoCapture(camera_index)
         if not self.cap.isOpened():
-            raise ConnectionError(f"錯誤：無法開啟攝影機 {camera_index}")
+            raise ConnectionError(f"錯誤:無法開啟攝影機 {camera_index}")
 
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
@@ -199,7 +313,7 @@ class TypingTrainerApp:
         
         print(f"攝影機實際使用解析度: {self.frame_width} x {self.frame_height}")
         if self.frame_width != width or self.frame_height != height:
-            raise ValueError(f"錯誤：攝影機不支援所選解析度 {width}x{height}。")
+            raise ValueError(f"錯誤:攝影機不支援所選解析度 {width}x{height}。")
         return True
 
     def _run_calibration_phase(self, image, results):
@@ -216,8 +330,8 @@ class TypingTrainerApp:
         if self.current_anchor_index >= len(self.calibration_anchors):
             if self.corrector.generate_key_map_from_anchors(self.calibration_points):
                 self.is_calibrated = True
-                self.last_typed_info["time"] = time.time() # 用於校準完成後的提示
-                self.calibration_message_shown = False # 重置旗標，以便顯示訊息
+                self.last_typed_info["time"] = time.time()
+                self.calibration_message_shown = False
             else:
                 self.current_anchor_index = 0
                 self.calibration_points = {}
@@ -226,42 +340,157 @@ class TypingTrainerApp:
         """處理練習階段的邏輯"""
         typed_key = self.kb_listener.get_last_key()
         if typed_key:
-            self.last_typed_info = {"key": typed_key.upper(), "time": time.time()}
-            if results and results.multi_hand_landmarks:
-                status, details = self.corrector.check_fingering(typed_key, results.multi_hand_landmarks, results.multi_handedness, self.frame_width, self.frame_height)
+            self.last_typed_info = {"key": typed_key.upper() if typed_key != ' ' else 'SPACE', "time": time.time()}
+            
+            if self.follow_mode and self.article_manager:
+                is_correct = self.article_manager.check_input(typed_key)
+                
+                if self.article_manager.is_completed():
+                    stats = self.article_manager.get_statistics()
+                    if stats:
+                        self.correction_info = {
+                            "msg": "Completed!",
+                            "details": f"WPM: {stats['wpm']:.1f} | Accuracy: {stats['accuracy']:.1f}%",
+                            "time": time.time()
+                        }
+            
+            if results and results.multi_hand_landmarks and typed_key != ' ':
+                status, details = self.corrector.check_fingering(
+                    typed_key, 
+                    results.multi_hand_landmarks, 
+                    results.multi_handedness, 
+                    self.frame_width, 
+                    self.frame_height
+                )
                 if status:
                     self.correction_info = {"msg": status, "details": details, "time": time.time()}
 
     def _draw_overlay(self, image, results):
         """在影像上繪製所有UI元素"""
         if not self.is_calibrated:
-            # 繪製校準UI
             target_key = self.calibration_anchors[self.current_anchor_index]
-            cv2.putText(image, "KEYBOARD CALIBRATION", (50, 80), cv2.FONT_HERSHEY_DUPLEX, 1.5, (0, 255, 255), 2)
-            cv2.putText(image, f"Please press key: '{target_key.upper()}'", (50, 150), cv2.FONT_HERSHEY_DUPLEX, 1.5, (255, 255, 255), 2)
+            draw_text_with_background(image, "KEYBOARD CALIBRATION", (50, 80), 
+                                     cv2.FONT_HERSHEY_DUPLEX, 1.5, (0, 255, 255), (0, 0, 0), 2, 10, 0.8)
+            draw_text_with_background(image, f"Please press key: '{target_key.upper()}'", (50, 150), 
+                                     cv2.FONT_HERSHEY_DUPLEX, 1.5, (255, 255, 255), (0, 0, 0), 2, 10, 0.8)
             finger_pos = get_pressing_finger_pos(results, self.frame_width, self.frame_height)
             if finger_pos:
-                cv2.circle(image, finger_pos, 10, (0, 255, 255), 2)
+                cv2.circle(image, finger_pos, 15, (0, 255, 255), 3)
         else:
-            # 繪製練習UI
-            # 修正：校準完成提示只顯示一次
             if not self.calibration_message_shown:
-                cv2.putText(image, "Calibration Complete! Start typing.", (50, 80), cv2.FONT_HERSHEY_DUPLEX, 1.5, (0, 255, 0), 2)
-                # 3秒後將旗標設為True，之後不再顯示
+                draw_text_with_background(image, "Calibration Complete! Start typing.", (50, 80), 
+                                         cv2.FONT_HERSHEY_DUPLEX, 1.2, (0, 255, 0), (0, 0, 0), 2, 10, 0.8)
                 if time.time() - self.last_typed_info["time"] > 3:
                     self.calibration_message_shown = True
             
-            if self.settings.get('keyboard', False): self.corrector.draw_keyboard(image)
-            if self.settings.get('guide', False): cv2.putText(image, "A-Z...", (50, 120), cv2.FONT_HERSHEY_SIMPLEX, 1.1, (0, 0, 0), 3)
-            if self.settings.get('finger', False): cv2.putText(image, "LP:QAZ...", (50, 160), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (80, 80, 80), 2)
+            if self.settings.get('keyboard', False): 
+                self.corrector.draw_keyboard(image)
+            
+            if self.settings.get('guide', False): 
+                draw_text_with_background(image, "A-Z...", (50, 120), 
+                                         cv2.FONT_HERSHEY_SIMPLEX, 1.1, (255, 255, 255), (0, 0, 0), 2, 8, 0.8)
+            
+            if self.settings.get('finger', False): 
+                draw_text_with_background(image, "LP:QAZ...", (50, 160), 
+                                         cv2.FONT_HERSHEY_SIMPLEX, 0.9, (200, 200, 200), (0, 0, 0), 2, 8, 0.8)
+
+            if self.follow_mode and self.article_manager:
+                self._draw_article_display(image)
 
             if time.time() - self.last_typed_info["time"] < 2:
-                cv2.putText(image, f"Typed: {self.last_typed_info['key']}", (50, 150), cv2.FONT_HERSHEY_DUPLEX, 2, (255, 255, 0), 3)
+                draw_text_with_background(image, f"Typed: {self.last_typed_info['key']}", (50, 200), 
+                           cv2.FONT_HERSHEY_DUPLEX, 2, (0, 255, 255), (0, 0, 0), 3, 10, 0.8)
+            
             if time.time() - self.correction_info["time"] < 2:
-                color = (0, 255, 0) if self.correction_info["msg"] == "Correct" else (0, 0, 255)
-                cv2.putText(image, self.correction_info["msg"], (50, 230), cv2.FONT_HERSHEY_DUPLEX, 1.5, color, 2)
+                color = (0, 255, 0) if self.correction_info["msg"] == "Correct" else (0, 100, 255)
+                draw_text_with_background(image, self.correction_info["msg"], (50, 250), 
+                           cv2.FONT_HERSHEY_DUPLEX, 1.5, color, (0, 0, 0), 2, 10, 0.8)
                 if self.correction_info["msg"] == "Wrong":
-                    cv2.putText(image, self.correction_info["details"], (50, 280), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2)
+                    draw_text_with_background(image, self.correction_info["details"], (50, 300), 
+                               cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, (0, 0, 0), 2, 8, 0.8)
+                elif self.correction_info["msg"] == "Completed!":
+                    draw_text_with_background(image, self.correction_info["details"], (50, 300), 
+                               cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), (0, 0, 0), 2, 8, 0.8)
+
+    def _draw_article_display(self, image):
+        """繪製跟打文章顯示區域"""
+        article = self.article_manager.current_article
+        pos = self.article_manager.current_position
+        
+        y_pos = self.frame_height - 250
+        x_start = 50
+        
+        max_chars_per_line = 50
+        if len(article) > max_chars_per_line:
+            current_line = pos // max_chars_per_line
+            line_start = current_line * max_chars_per_line
+            line_end = min(line_start + max_chars_per_line, len(article))
+            display_article = article[line_start:line_end]
+            display_pos = pos - line_start
+        else:
+            display_article = article
+            display_pos = pos
+        
+        overlay = image.copy()
+        cv2.rectangle(overlay, (x_start - 15, y_pos - 60), 
+                    (self.frame_width - 50, y_pos + 170), (20, 20, 20), -1)
+        cv2.addWeighted(overlay, 0.75, image, 0.25, 0, image)
+        
+        draw_text_with_background(image, 
+                   f"Level: {self.article_manager.current_level} - Article {self.article_manager.current_index + 1}", 
+                   (x_start, y_pos - 30), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 100), (30, 30, 30), 2, 6, 0.8)
+        
+        if display_pos > 0:
+            completed_text = display_article[:display_pos]
+            cv2.putText(image, completed_text, (x_start, y_pos), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.9, (100, 255, 100), 2, cv2.LINE_AA)
+        
+        if display_pos < len(display_article):
+            completed_width = 0
+            if display_pos > 0:
+                completed_width = cv2.getTextSize(display_article[:display_pos], 
+                                                 cv2.FONT_HERSHEY_SIMPLEX, 0.9, 2)[0][0]
+            
+            current_char = display_article[display_pos]
+            display_char = '_' if current_char == ' ' else current_char
+            
+            char_size = cv2.getTextSize(display_char, cv2.FONT_HERSHEY_SIMPLEX, 1.3, 3)[0]
+            cv2.rectangle(image, (x_start + completed_width - 5, y_pos - char_size[1] - 10),
+                        (x_start + completed_width + char_size[0] + 8, y_pos + 12),
+                        (0, 200, 255), -1)
+            
+            cv2.putText(image, display_char, (x_start + completed_width, y_pos), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 0, 0), 3, cv2.LINE_AA)
+            
+            if display_pos + 1 < len(display_article):
+                current_width = char_size[0] + 8
+                remaining_text = display_article[display_pos+1:]
+                cv2.putText(image, remaining_text, 
+                           (x_start + completed_width + current_width, y_pos), 
+                           cv2.FONT_HERSHEY_SIMPLEX, 0.9, (230, 230, 230), 2, cv2.LINE_AA)
+        
+        progress = self.article_manager.get_progress()
+        bar_width = self.frame_width - 110
+        bar_height = 25
+        bar_x = x_start
+        bar_y = y_pos + 60
+        
+        cv2.rectangle(image, (bar_x, bar_y), (bar_x + bar_width, bar_y + bar_height), (60, 60, 60), -1)
+        fill_width = int(bar_width * progress / 100)
+        if fill_width > 0:
+            cv2.rectangle(image, (bar_x, bar_y), (bar_x + fill_width, bar_y + bar_height), (100, 255, 100), -1)
+        cv2.rectangle(image, (bar_x, bar_y), (bar_x + bar_width, bar_y + bar_height), (255, 255, 255), 2)
+        
+        draw_text_with_background(image, f"{progress}%", (bar_x + bar_width + 25, bar_y + 20), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), (30, 30, 30), 2, 6, 0.8)
+        
+        stats = self.article_manager.get_statistics()
+        if stats:
+            stats_text = f"WPM: {stats['wpm']:.1f} | Accuracy: {stats['accuracy']:.1f}% | Errors: {stats['errors']}"
+            draw_text_with_background(image, stats_text, 
+                       (x_start, y_pos + 120), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), (30, 30, 30), 2, 6, 0.8)
 
     def run(self):
         """主應用程式迴圈"""
@@ -312,6 +541,7 @@ def init_screen():
         settings['keyboard'] = keyboard_var.get()
         settings['guide'] = guide_var.get()
         settings['topmost'] = topmost_var.get()
+        settings['follow_mode'] = follow_var.get()
         settings['camera_index'] = int(cam_var.get())
         res_w, res_h = map(int, res_var.get().split('x'))
         settings['resolution'] = (res_w, res_h)
@@ -364,10 +594,19 @@ def init_screen():
     widgets.append(topmost_cb)
     topmost_var.set(True)
 
+    follow_var = tk.BooleanVar()
+    follow_cb = tk.Checkbutton(left_frame, text="跟打模式", variable=follow_var, font=("DFKai-SB", 18), 
+                               bg="#0000A0", fg="white", selectcolor="#0000A0", activebackground="#0000A0", 
+                               activeforeground="white", highlightthickness=2, highlightbackground="#0000A0", 
+                               highlightcolor="white")
+    follow_cb.pack(anchor="w", pady=10)
+    widgets.append(follow_cb)
+    follow_var.set(False)
+
     right_frame = tk.Frame(frame, bg="#0000A0")
     right_frame.grid(row=1, column=2, sticky="nsew", padx=(20, 40), pady=10)
 
-    cam_label = tk.Label(right_frame, text="攝像頭選擇：", font=("DFKai-SB", 18), bg="#0000A0", fg="white")
+    cam_label = tk.Label(right_frame, text="攝像頭選擇:", font=("DFKai-SB", 18), bg="#0000A0", fg="white")
     cam_label.pack(anchor="w", pady=(10,0))
     cam_var = tk.StringVar()
     cam_menu = tk.OptionMenu(right_frame, cam_var, "0", "1")
@@ -377,7 +616,7 @@ def init_screen():
     cam_menu.pack(anchor="w", pady=10)
     widgets.append(cam_menu)
 
-    res_label = tk.Label(right_frame, text="解析度選擇：", font=("DFKai-SB", 18), bg="#0000A0", fg="white")
+    res_label = tk.Label(right_frame, text="解析度選擇:", font=("DFKai-SB", 18), bg="#0000A0", fg="white")
     res_label.pack(anchor="w", pady=(10,0))
     res_var = tk.StringVar()
     res_menu = tk.OptionMenu(right_frame, res_var, "640x480", "1280x720", "1920x1080")
@@ -405,59 +644,21 @@ def init_screen():
         widget = event.widget
         widget_type = widget.winfo_class()
         if widget_type == "Checkbutton":
-            widget.config(
-                highlightbackground="white",
-                bg="red",
-                fg="white",
-                activebackground="red",
-                activeforeground="white",
-                selectcolor="red"
-            )
+            widget.config(highlightbackground="white", bg="red", fg="white", activebackground="red", activeforeground="white", selectcolor="red")
         elif widget_type == "Button":
-            widget.config(
-                highlightbackground="white",
-                bg="red",
-                fg="white",
-                activebackground="red",
-                activeforeground="white"
-            )
+            widget.config(highlightbackground="white", bg="red", fg="white", activebackground="red", activeforeground="white")
         elif widget_type == "Menubutton":
-            widget.config(
-                highlightbackground="white",
-                bg="red",
-                fg="white",
-                activebackground="red",
-                activeforeground="white"
-            )
+            widget.config(highlightbackground="white", bg="red", fg="white", activebackground="red", activeforeground="white")
 
     def on_focus_out(event):
         widget = event.widget
         widget_type = widget.winfo_class()
         if widget_type == "Checkbutton":
-            widget.config(
-                highlightbackground="#0000A0",
-                bg="#0000A0",
-                fg="white",
-                activebackground="#0000A0",
-                activeforeground="white",
-                selectcolor="#0000A0"
-            )
+            widget.config(highlightbackground="#0000A0", bg="#0000A0", fg="white", activebackground="#0000A0", activeforeground="white", selectcolor="#0000A0")
         elif widget_type == "Button":
-            widget.config(
-                highlightbackground="#0000A0",
-                bg="#0000A0",
-                fg="white",
-                activebackground="#0000A0",
-                activeforeground="white"
-            )
+            widget.config(highlightbackground="#0000A0", bg="#0000A0", fg="white", activebackground="#0000A0", activeforeground="white")
         elif widget_type == "Menubutton":
-            widget.config(
-                highlightbackground="#0000A0",
-                bg="#0000A0",
-                fg="white",
-                activebackground="#0000A0",
-                activeforeground="white"
-            )
+            widget.config(highlightbackground="#0000A0", bg="#0000A0", fg="white", activebackground="#0000A0", activeforeground="white")
 
     for w in widgets:
         w.bind("<FocusIn>", on_focus_in)
@@ -492,13 +693,14 @@ def main(settings):
     print("應用程式設定:", settings)
     
     try:
-        # 創建並啟動打字訓練應用
         app = TypingTrainerApp(settings)
         
-        # 添加初始提示信息的功能
         original_run = app.run
         def run_with_hint():
             print("按ESC鍵退出程式")
+            if settings.get('follow_mode'):
+                print("跟打模式已啟動!")
+                print("提示: 按空格鍵來輸入空格")
             original_run()
         
         app.run = run_with_hint
