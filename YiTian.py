@@ -1,6 +1,7 @@
 import cv2
 import mediapipe as mp
 import numpy as np  # 新增:需要用於透視變換
+import time
 from pynput import keyboard
 import threading
 import copy  
@@ -77,7 +78,6 @@ class HandDetector:
         
         return self.results
 
-# 從 YiTian_DEMO.py 搬過來的 TypingCorrector 類別
 class TypingCorrector:
     def __init__(self):
         self.key_layout = ["qwertyuiop", "asdfghjkl", "zxcvbnm"]
@@ -202,6 +202,105 @@ class TypingCorrector:
             
         return "Wrong", f"Should be {correct_finger_name}, but used {actual_finger_name}"
 
+class ArticleManager:
+    """管理跟打文章的類別"""
+    def __init__(self):
+        self.articles = {
+            "初級": [
+                "the quick brown fox jumps over the lazy dog",
+                "pack my box with five dozen liquor jugs",
+                "how vexingly quick daft zebras jump"
+            ],
+            "中級": [
+                "programming is the art of telling another human what one wants the computer to do",
+                "practice makes perfect when learning touch typing skills",
+                "the complexity of algorithms determines the efficiency of programs"
+            ],
+            "高級": [
+                "artificial intelligence and machine learning are transforming the way we interact with technology",
+                "the complexity of modern software development requires continuous learning and adaptation",
+                "efficient data structures and algorithms are fundamental to building scalable applications"
+            ]
+        }
+        self.current_article = ""
+        self.current_position = 0
+        self.start_time = None
+        self.errors = 0
+        self.current_level = "初級"
+        self.current_index = 0
+        
+    def load_article(self, level="初級", index=0):
+        """載入指定難度的文章"""
+        if level in self.articles and index < len(self.articles[level]):
+            self.current_article = self.articles[level][index]
+            self.current_position = 0
+            self.start_time = None
+            self.errors = 0
+            self.current_level = level
+            self.current_index = index
+            return True
+        return False
+    
+    def get_next_char(self):
+        """取得下一個要輸入的字元"""
+        if self.current_position < len(self.current_article):
+            return self.current_article[self.current_position]
+        return None
+    
+    def check_input(self, typed_char):
+        """檢查輸入是否正確"""
+        if self.start_time is None:
+            self.start_time = time.time()
+            
+        expected = self.get_next_char()
+        if expected:
+            if expected == ' ':
+                if typed_char == ' ':
+                    self.current_position += 1
+                    return True
+                else:
+                    self.errors += 1
+                    return False
+            elif typed_char.lower() == expected.lower():
+                self.current_position += 1
+                return True
+            else:
+                self.errors += 1
+                return False
+        return False
+    
+    def is_completed(self):
+        """檢查是否完成"""
+        return self.current_position >= len(self.current_article)
+    
+    def get_progress(self):
+        """取得進度百分比"""
+        if not self.current_article:
+            return 0
+        return int((self.current_position / len(self.current_article)) * 100)
+    
+    def get_statistics(self):
+        """取得統計資料"""
+        if not self.start_time:
+            return None
+        
+        elapsed_time = time.time() - self.start_time
+        wpm = (self.current_position / 5) / (elapsed_time / 60) if elapsed_time > 0 else 0
+        total_typed = self.current_position + self.errors
+        accuracy = (self.current_position / total_typed * 100) if total_typed > 0 else 0
+        
+        return {
+            "time": elapsed_time,
+            "wpm": wpm,
+            "accuracy": accuracy,
+            "errors": self.errors
+        }
+    
+    def reset(self):
+        """重置當前文章"""
+        self.current_position = 0
+        self.start_time = None
+        self.errors = 0
 
 # 測試代碼(保持註解狀態)
 '''
