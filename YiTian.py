@@ -38,14 +38,9 @@ class KeyboardListener:
             return key
         
 class HandDetector:
-    def __init__(self, mode=False, max_hands=2, model_complexity=0, detection_con=0.75, track_con=0.75):
-        self.mode = mode
-        self.max_hands = max_hands
-        self.model_complexity = model_complexity
-        self.detection_con = detection_con
-        self.track_con = track_con
+    def __init__(self, mode, max_hands, model_complexity, detection_con, track_con):
         self.mp_hands = mp.solutions.hands
-        self.hands = self.mp_hands.Hands(self.mode, self.max_hands, self.model_complexity, self.detection_con, self.track_con)
+        self.hands = self.mp_hands.Hands(mode, max_hands, model_complexity, detection_con, track_con)
         self.results = None
         self.prev_landmarks = None 
 
@@ -203,13 +198,13 @@ class TypingCorrector:
         return "Wrong", f"Should be {correct_finger_name}, but used {actual_finger_name}"
 
 # 測試代碼(保持註解狀態)
-'''
+
 if __name__ == "__main__":
-    cap = cv2.VideoCapture(0)
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+    cap = cv2.VideoCapture(1)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
     
-    detector = HandDetector()
+    detector = HandDetector(mode=False, max_hands=2, model_complexity=0, detection_con=0.75, track_con=0.75)
     mp_drawing = mp.solutions.drawing_utils
     mp_hands = mp.solutions.hands
     
@@ -236,4 +231,3 @@ if __name__ == "__main__":
     
     cap.release()
     cv2.destroyAllWindows()
-'''
