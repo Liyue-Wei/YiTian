@@ -1,3 +1,11 @@
+# -*- coding: utf-8 -*-
+'''
+YiTian - Touch Typing Correction System
+
+Copyright (c) 2025 Zhang Zhewei (Liyue-Wei)
+Licensed under the MIT License. 
+'''
+
 import cv2
 import mediapipe as mp
 import numpy as np  # 新增:需要用於透視變換
