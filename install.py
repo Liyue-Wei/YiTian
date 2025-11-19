@@ -1,7 +1,6 @@
 import sys
 import subprocess
 
-global packages
 packages = ["ttkbootstrap", 
             "pillow", 
             "mediapipe", 
@@ -13,7 +12,10 @@ def installer(package):
     pass
 
 def main():
-    pass
-
+    print(f"Currient version = Python {sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}")
+    if sys.version_info < (3, 10):
+        print(f"Error: Python 3.10 or higher is required. Terminated...")
+        sys.exit()
+    
 if __name__ == "__main__":
     main()
