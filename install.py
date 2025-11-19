@@ -2,7 +2,7 @@ import sys
 import subprocess
 
 global packages
-packages = []
+packages = ["ttkbootstrap", "pillow", "mediapipe", "opencv-contrib-python", "numpy", "pynput"]
 
 def installer(package):
     pass
