@@ -1,6 +1,7 @@
 import sys
 import subprocess
 
+global packages
 packages = []
 
 def installer(package):
