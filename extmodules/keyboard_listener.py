@@ -18,4 +18,8 @@ class KeyboardListener:
 
     def on_press(self, key):
         with self.lock:
-            pass
+            try:
+                if hasattr(key, 'char') and key.char:
+                    self.pressed_key = key.char.lower()
+            except AttributeError:
+                pass
