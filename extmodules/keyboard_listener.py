@@ -39,3 +39,9 @@ class KeyboardListener:
             except AttributeError:
                 print(f"[Warning] Invalid key attribute: {key}")
                 pass    # "Error" if needed
+
+    def get_key(self):
+        with self.lock:
+            key = self.pressed_key
+            self.pressed_key = None
+            return key
