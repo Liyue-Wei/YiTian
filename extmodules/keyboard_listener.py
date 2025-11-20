@@ -13,5 +13,8 @@ class KeyboardListener:
     def __init__(self):
         self.pressed_key = None
         self.lock = threading.Lock()
-        self.listener = keyboard.Listener()
+        self.listener = keyboard.Listener(on_press=self.on_press)
         self.listener.start()
+
+    def on_press(self, key):
+        pass
