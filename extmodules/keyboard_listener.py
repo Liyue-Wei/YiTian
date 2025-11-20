@@ -21,5 +21,21 @@ class KeyboardListener:
             try:
                 if hasattr(key, 'char') and key.char:
                     self.pressed_key = key.char.lower()
+                else:
+                    match key:
+                        case keyboard.Key.space:
+                            self.pressed_key = ' '
+                        case keyboard.Key.enter:
+                            self.pressed_key = '\n'
+                        case keyboard.Key.tab:
+                            self.pressed_key = '\t'
+                        case keyboard.Key.backspace:
+                            self.pressed_key = "BACKSPACE"
+                        case keyboard.Key.esc:
+                            self.pressed_key = "ESC"
+                        case _:
+                            pass    # "Invalid" if needed
+
             except AttributeError:
-                pass
+                print(f"[Warning] Invalid key attribute: {key}")
+                pass    # "Error" if needed
