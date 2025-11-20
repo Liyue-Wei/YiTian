@@ -17,4 +17,5 @@ class KeyboardListener:
         self.listener.start()
 
     def on_press(self, key):
-        pass
+        with self.lock:
+            pass
