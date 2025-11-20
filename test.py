@@ -13,13 +13,13 @@ class KeyboardListener:
     def on_press(self, key):
         with self.lock:
             # 【实验模式】不加 hasattr 检查，直接硬拿 .char
-            # try:
-            #     self.pressed_key = key.char
-            # except AttributeError:
-            #     # 如果不加 try-except，线程会直接死掉
-            #     # 这里把它打印出来让你看到报错
-            #     print(f"\n[Error] 抓到了！按键 {key} 居然没有 .char 属性！")
-            print(key)
+            try:
+                self.pressed_key = key.char
+            except AttributeError:
+                # 如果不加 try-except，线程会直接死掉
+                # 这里把它打印出来让你看到报错
+                print(f"\n[Error] 抓到了！按键 {key} 居然没有 .char 属性！")
+            # print(key)
 
     def get_last_key(self):
         with self.lock:
