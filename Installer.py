@@ -1,3 +1,11 @@
+# -*- coding: utf-8 -*-
+'''
+YiTian - Keyboard Listener Module
+
+Copyright (c) 2025 Zhang Zhewei (Liyue-Wei)
+Licensed under the GNU GPL v3.0 License. 
+'''
+
 import os
 import sys
 import subprocess
