@@ -13,7 +13,9 @@ import cv2
 import struct
 import threading
 import numpy as np
-import tkinter as tk
+import customtkinter as ctk
+import pywinstyles
+from PIL import Image, ImageTk
 
 def main():
     pass
