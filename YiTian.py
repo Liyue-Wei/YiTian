@@ -13,9 +13,10 @@ import cv2
 import struct
 import threading
 import numpy as np
-import customtkinter as ctk
-import pywinstyles
-from PIL import Image, ImageTk
+# import customtkinter as ctk
+# import pywinstyles
+# from PIL import Image, ImageTk
+import tkinter as tk
 
 def main():
     pass
