@@ -15,7 +15,9 @@ packages = ["ttkbootstrap",
             "mediapipe", 
             "opencv-contrib-python", 
             "numpy", 
-            "pynput"]
+            "pynput", 
+            "customtkinter", 
+            "pywinstyles"]
 
 success = []
 exists = []
