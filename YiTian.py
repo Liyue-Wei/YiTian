@@ -18,8 +18,18 @@ import numpy as np
 # from PIL import Image, ImageTk
 import tkinter as tk
 
+def capture(num):
+    try:
+        cap = cv2.VideoCapture(num)
+        if not cap.isOpened():
+            raise IOError(f"Camera {num} can not be opened...")
+    except Exception as e:
+        print(f"Error: {e}")
+
+    res = f"{shm_cfg.WIDTH}x{shm_cfg.HEIGHT}"
+
 def main():
-    pass
+    capture(2)
 
 if __name__ == "__main__":
     main()
