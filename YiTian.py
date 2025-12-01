@@ -46,6 +46,8 @@ def camera(num):
 
             shm_frame = shared_memory.SharedMemory(create=True, size=shm_cfg.FRAME_SIZE, name=shm_cfg.SHM_FRAME_ID)
 
+        frame_array = shared_memory
+
     except Exception as e:
         print(f"Error: {e}")
 
