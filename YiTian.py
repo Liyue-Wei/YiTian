@@ -25,14 +25,14 @@ def camera(num):
         if not cam.isOpened():
             raise IOError(f"Camera {num} can not be opened...")
         
-        res = (shm_cfg.WIDTH, shm_cfg.HEIGHT, shm_cfg.FPS)
+        res = [shm_cfg.WIDTH, shm_cfg.HEIGHT, shm_cfg.FPS]
         cam.set(cv2.CAP_PROP_FRAME_WIDTH, res[0])
         cam.set(cv2.CAP_PROP_FRAME_HEIGHT, res[1])
         cam.set(cv2.CAP_PROP_FPS, res[2])
 
-        real_res = (int(cam.get(cv2.CAP_PROP_FRAME_WIDTH)), 
+        real_res = [int(cam.get(cv2.CAP_PROP_FRAME_WIDTH)), 
                     int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT)), 
-                    int(cam.get(cv2.CAP_PROP_FPS)))
+                    int(cam.get(cv2.CAP_PROP_FPS))]
         if not real_res == res:
             raise IOError(f"Resolution Setting Unavailable: Expected {res}, but got {real_res}...")
         
@@ -40,14 +40,13 @@ def camera(num):
             shm_frame = shared_memory.SharedMemory(create=True, size=shm_cfg.FRAME_SIZE, name=shm_cfg.SHM_FRAME_ID)
         except FileExistsError:
             print("Shared Memory already exists. Cleaning up...")
-            temp_shm = shared_memory.SharedMemory(name=shm_cfg.SHM_FRAME_ID)
-            temp_shm.close()
-            temp_shm.unlink()
+            with shared_memory.SharedMemory(name=shm_cfg.SHM_FRAME_ID) as temp_shm:
+                temp_shm.unlink()
             shm_frame = shared_memory.SharedMemory(create=True, size=shm_cfg.FRAME_SIZE, name=shm_cfg.SHM_FRAME_ID)
 
         shm_buf = shm_frame.buf
         shm_buf[0] = shm_cfg.FLAG_IDLE
-        frame_array = np.ndarray(res, dtype=np.uint8, buffer=shm_buf, offset=1)
+        frame_array = np.ndarray((res[0], res[1], shm_cfg.CHANNELS), dtype=np.uint8, buffer=shm_buf, offset=1)
 
     except Exception as e:
         print(f"Error: {e}")
