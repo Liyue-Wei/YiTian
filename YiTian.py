@@ -12,7 +12,7 @@ import multiprocessing
 from multiprocessing import shared_memory
 import cv2
 import struct
-import threading
+import subprocess
 import numpy as np
 # import customtkinter as ctk
 # import pywinstyles
