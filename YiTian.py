@@ -18,20 +18,28 @@ import numpy as np
 # from PIL import Image, ImageTk
 import tkinter as tk
 
-def capture(num):
+def camera(num):
     try:
-        cap = cv2.VideoCapture(num)
-        if not cap.isOpened():
+        cam = cv2.VideoCapture(num)
+        if not cam.isOpened():
             raise IOError(f"Camera {num} can not be opened...")
+        
+        res = [shm_cfg.WIDTH, shm_cfg.HEIGHT, shm_cfg.FPS]
+        cam.set(cv2.CAP_PROP_FRAME_WIDTH, res[0])
+        cam.set(cv2.CAP_PROP_FRAME_HEIGHT, res[1])
+        cam.set(cv2.CAP_PROP_FPS, res[2])
+
+        real_res = [int(cam.get(cv2.CAP_PROP_FRAME_WIDTH)), 
+                    int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT)), 
+                    int(cam.get(cv2.CAP_PROP_FPS))]
+        if not real_res == res:
+            raise IOError(f"Resolution Setting Unavailable: Expected {res}, but got {real_res}...")
+
     except Exception as e:
         print(f"Error: {e}")
 
-    res = [shm_cfg.WIDTH, shm_cfg.HEIGHT, shm_cfg.FPS]
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, res[0])
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, res[1])
-
 def main():
-    pass
+    camera(0)
 
 if __name__ == "__main__":
     main()
