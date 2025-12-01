@@ -7,3 +7,5 @@ Licensed under the GNU GPL v3.0 License.
 '''
 
 from multiprocessing import shared_memory
+import mediapipe as mp
+import cv2
