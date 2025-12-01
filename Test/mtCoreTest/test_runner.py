@@ -15,7 +15,7 @@ def main():
     # 为每个核心启动一个独立的 Python 进程
     for i in range(cpu_count):
         # 使用 sys.executable 确保使用当前的 Python 环境
-        p = subprocess.Popen([sys.executable, "C:\\Users\\eric2\\Desktop\\YiTian\\Test\\mtCoreTest\\cpu_task.py"])
+        p = subprocess.Popen([sys.executable, "./Test/mtCoreTest/cpu_task.py"])
         processes.append(p)
         print(f"已启动进程 {i+1}/{cpu_count}")
 
