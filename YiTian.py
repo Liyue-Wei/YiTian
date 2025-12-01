@@ -26,10 +26,12 @@ def capture(num):
     except Exception as e:
         print(f"Error: {e}")
 
-    res = f"{shm_cfg.WIDTH}x{shm_cfg.HEIGHT}"
+    res = [shm_cfg.WIDTH, shm_cfg.HEIGHT, shm_cfg.FPS]
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, res[0])
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, res[1])
 
 def main():
-    capture(2)
+    pass
 
 if __name__ == "__main__":
     main()
