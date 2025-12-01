@@ -39,7 +39,12 @@ def camera(num):
         try:
             shm_frame = shared_memory.SharedMemory(create=True, size=shm_cfg.FRAME_SIZE, name=shm_cfg.SHM_FRAME_ID)
         except FileExistsError:
-            pass
+            print("Shared Memory already exists. Cleaning up...")
+            temp_shm = shared_memory.SharedMemory(name=shm_cfg.SHM_FRAME_ID)
+            temp_shm.close()
+            temp_shm.unlink()
+
+            shm_frame = shared_memory.SharedMemory(create=True, size=shm_cfg.FRAME_SIZE, name=shm_cfg.SHM_FRAME_ID)
 
     except Exception as e:
         print(f"Error: {e}")
