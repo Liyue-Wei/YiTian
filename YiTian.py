@@ -35,9 +35,17 @@ def camera(num):
                     int(cam.get(cv2.CAP_PROP_FPS))]
         if not real_res == res:
             raise IOError(f"Resolution Setting Unavailable: Expected {res}, but got {real_res}...")
+        
+        try:
+            shm_frame = shared_memory.SharedMemory(create=True, size=shm_cfg.FRAME_SIZE, name=shm_cfg.SHM_FRAME_ID)
+        except FileExistsError:
+            pass
 
     except Exception as e:
         print(f"Error: {e}")
+
+def hand_detector():
+    pass
 
 def main():
     camera(0)
