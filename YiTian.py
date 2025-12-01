@@ -43,10 +43,11 @@ def camera(num):
             temp_shm = shared_memory.SharedMemory(name=shm_cfg.SHM_FRAME_ID)
             temp_shm.close()
             temp_shm.unlink()
-
             shm_frame = shared_memory.SharedMemory(create=True, size=shm_cfg.FRAME_SIZE, name=shm_cfg.SHM_FRAME_ID)
 
-        frame_array = shared_memory
+        shm_flag = shm_frame.buf
+        shm_flag[0] = shm_cfg.FLAG_IDLE
+        frame_array = None
 
     except Exception as e:
         print(f"Error: {e}")
