@@ -23,7 +23,7 @@ def camera(num):
     try:
         cam = cv2.VideoCapture(num, cv2.CAP_DSHOW)
         if not cam.isOpened():
-            raise IOError(f"Camera {num} can not be opened...")
+            raise IOError(f"Camera {num} can not be opened")
         
         res = [shm_cfg.WIDTH, shm_cfg.HEIGHT, shm_cfg.FPS]
         cam.set(cv2.CAP_PROP_FRAME_WIDTH, res[0])
@@ -36,7 +36,7 @@ def camera(num):
                     int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT)), 
                     int(cam.get(cv2.CAP_PROP_FPS))]
         if not real_res == res:
-            raise IOError(f"Resolution Setting Unavailable: Expected {res}, but got {real_res}...")
+            raise IOError(f"Resolution Setting Unavailable: Expected {res}, but got {real_res}")
         
         try:
             shm_frame = shared_memory.SharedMemory(create=True, size=shm_cfg.FRAME_SIZE, name=shm_cfg.SHM_FRAME_ID)
@@ -53,10 +53,10 @@ def camera(num):
         while True:
             ret, img = cam.read()
             if not ret:
-                raise()
+                raise IOError("Frame can not be read")
 
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Error: {e}\nTerminated...")
 
 def hand_detector():
     pass
