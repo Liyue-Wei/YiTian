@@ -48,12 +48,17 @@ def camera(num):
 
         shm_buf = shm_frame.buf
         shm_buf[0] = shm_cfg.FLAG_IDLE
-        frame_array = np.ndarray((res[0], res[1], shm_cfg.CHANNELS), dtype=np.uint8, buffer=shm_buf, offset=1)
+        frame_array = np.ndarray((res[1], res[0], shm_cfg.CHANNELS), dtype=np.uint8, buffer=shm_buf, offset=1)
 
         while True:
             ret, img = cam.read()
             if not ret:
                 raise IOError("Frame can not be read")
+            
+            shm_buf[0] = shm_cfg.FLAG_WRITING
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            frame_array[:] = img
+            shm_buf[0] = shm_cfg.FLAG_IDLE
 
     except Exception as e:
         print(f"Error: {e}\nTerminated...")
