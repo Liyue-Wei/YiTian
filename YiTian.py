@@ -21,7 +21,7 @@ import tkinter as tk
 
 def camera(num):
     try:
-        cam = cv2.VideoCapture(num)
+        cam = cv2.VideoCapture(num, cv2.CAP_DSHOW)
         if not cam.isOpened():
             raise IOError(f"Camera {num} can not be opened...")
         
@@ -29,6 +29,8 @@ def camera(num):
         cam.set(cv2.CAP_PROP_FRAME_WIDTH, res[0])
         cam.set(cv2.CAP_PROP_FRAME_HEIGHT, res[1])
         cam.set(cv2.CAP_PROP_FPS, res[2])
+        cam.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
+        cam.set(cv2.CAP_PROP_BUFFERSIZE, 1)
 
         real_res = [int(cam.get(cv2.CAP_PROP_FRAME_WIDTH)), 
                     int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT)), 
@@ -47,6 +49,11 @@ def camera(num):
         shm_buf = shm_frame.buf
         shm_buf[0] = shm_cfg.FLAG_IDLE
         frame_array = np.ndarray((res[0], res[1], shm_cfg.CHANNELS), dtype=np.uint8, buffer=shm_buf, offset=1)
+
+        while True:
+            ret, img = cam.read()
+            if not ret:
+                raise()
 
     except Exception as e:
         print(f"Error: {e}")
