@@ -38,6 +38,12 @@ def main():
             # 共享内存里是 RGB，OpenCV 显示需要 BGR，所以要转回来
             # copy() 是为了把数据从共享内存复制到本地，防止显示过程中数据被主程序修改
             current_frame = shared_img.copy() 
+            
+            # --- 修改：打印共享内存对象的原始信息 ---
+            # 打印 buffer 对象本身，可以看到内存地址和长度
+            print(f"正在读取 RAM 原型 | Buffer: {shm_buf} | 内存地址: {hex(id(shm_buf))} | 状态位: {shm_buf[0]}")
+            # ----------------------------------------
+
             display_img = cv2.cvtColor(current_frame, cv2.COLOR_RGB2BGR)
 
             cv2.imshow("Reader Process", display_img)
