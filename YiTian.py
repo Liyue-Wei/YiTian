@@ -55,10 +55,15 @@ def camera(num):
             if not ret:
                 raise IOError("Frame can not be read")
             
-            shm_buf[0] = shm_cfg.FLAG_WRITING
-            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-            frame_array[:] = img
-            shm_buf[0] = shm_cfg.FLAG_IDLE
+            try:
+                pass
+            finally:
+                pass
+
+            # shm_buf[0] = shm_cfg.FLAG_WRITING
+            # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            # frame_array[:] = img
+            # shm_buf[0] = shm_cfg.FLAG_IDLE
 
     except Exception as e:
         print(f"Error: {e}\nTerminated...")
