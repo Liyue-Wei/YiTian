@@ -56,8 +56,9 @@ def main():
             # 打印当前进度
             print(f"\r进度: {elapsed_time:.1f}/{duration}s | Buffer: {hex(id(shm_buf))} | 状态: {current_status}", end="")
 
-            display_img = cv2.cvtColor(current_frame, cv2.COLOR_RGB2BGR)
-            cv2.imshow("Reader Process", display_img)
+            # display_img = cv2.cvtColor(current_frame, cv2.COLOR_RGB2BGR)
+            # cv2.imshow("Reader Process", display_img)
+            cv2.imshow("Reader Process", current_frame)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 print("\n用户手动停止")
