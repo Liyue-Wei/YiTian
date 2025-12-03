@@ -20,6 +20,8 @@ import numpy as np
 import tkinter as tk
 
 def camera(num):
+    cam = None
+    shm_frame = None
     try:
         cam = cv2.VideoCapture(num, cv2.CAP_DSHOW)
         if not cam.isOpened():
@@ -41,7 +43,7 @@ def camera(num):
         try:
             shm_frame = shared_memory.SharedMemory(create=True, size=shm_cfg.FRAME_SIZE, name=shm_cfg.SHM_FRAME_ID)
         except FileExistsError:
-            print("Shared Memory already exists. Cleaning up...")
+            print("Process: Shared Memory already exists. Cleaning up...")
             with shared_memory.SharedMemory(name=shm_cfg.SHM_FRAME_ID) as temp_shm:
                 temp_shm.unlink()
             shm_frame = shared_memory.SharedMemory(create=True, size=shm_cfg.FRAME_SIZE, name=shm_cfg.SHM_FRAME_ID)
@@ -50,7 +52,7 @@ def camera(num):
         shm_buf[0] = shm_cfg.FLAG_IDLE
         frame_array = np.ndarray((res[1], res[0], shm_cfg.CHANNELS), dtype=np.uint8, buffer=shm_buf, offset=1)
 
-        while True:
+        while shm_buf[0] != shm_cfg.FLAG_EXIT:
             ret, img = cam.read()
             if not ret:
                 raise IOError("Frame can not be read")
@@ -62,13 +64,25 @@ def camera(num):
                 shm_buf[0] = shm_cfg.FLAG_IDLE
 
     except Exception as e:
-        print(f"Error: {e}\nTerminated...")
+        print(f"Error: {e}")
+    finally:
+        if cam is not None:
+            cam.release()
+            print("Process: Camera released.")
+        
+        if shm_frame is not None:
+            try:
+                shm_frame.close()
+                shm_frame.unlink()
+                print("Process: Shared Memory cleared.")
+            except Exception as e:
+                print(f"Error cleaning up shared memory: {e}")
 
 def hand_detector():
     pass
 
 def main():
-    pass
+    camera(0)
 
 if __name__ == "__main__":
     main()
