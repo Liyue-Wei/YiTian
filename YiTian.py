@@ -68,7 +68,7 @@ def hand_detector():
     pass
 
 def main():
-    camera(0)
+    pass
 
 if __name__ == "__main__":
     main()
