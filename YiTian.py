@@ -38,7 +38,7 @@ def camera(num):
                     int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT)), 
                     int(cam.get(cv2.CAP_PROP_FPS))]
         if not real_res == res:
-            raise IOError(f"Resolution Setting Unavailable: Expected {res}, but got {real_res}")
+            raise ValueError(f"Resolution Setting Unavailable: Expected {res}, but got {real_res}")
         else:
             print(f"Process: Camera opened.")
         
