@@ -7,9 +7,12 @@ Licensed under the GNU GPL v3.0 License.
 '''
 
 from multiprocessing import shared_memory
-import mediapipe as mp
+import shm_cfg
 import cv2
 
 class HandDetector:
     def __init__(self):
-        pass
+        try:
+            shm_frame = shared_memory.SharedMemory(name=shm_cfg.SHM_FRAME_ID)
+        except:
+            raise IOError(f"Shared Memory unavaliable: {shm_cfg.SHM_FRAME_ID}")
