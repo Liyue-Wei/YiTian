@@ -76,13 +76,13 @@ def camera(num):
                 shm_frame.unlink()
                 print("Process: Shared Memory cleared.")
             except Exception as e:
-                print(f"Error cleaning up shared memory: {e}")
+                print(f"Error: Cleaning up shared memory failed: {e}")
 
 def hand_detector():
     pass
 
 def main():
-    camera(0)
+    camera(1)
 
 if __name__ == "__main__":
     main()
