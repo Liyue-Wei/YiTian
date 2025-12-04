@@ -84,7 +84,7 @@ def camera(num):
 def hand_detector():
     pass
 
-def corrector():
+def fingering_corrector():
     pass
 
 def main():
