@@ -54,7 +54,7 @@ class HandDetector:
         
         return None
     
-    def find_hands(self):
+    def find_hands(self, img):
         pass
 
     def cleanup(self):
