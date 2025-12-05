@@ -8,6 +8,7 @@ Licensed under the GNU GPL v3.0 License.
 
 from multiprocessing import shared_memory
 import mediapipe as mp
+import numpy as np
 import shm_cfg
 import cv2
 
@@ -39,6 +40,14 @@ class HandDetector:
         self.mp_hands = mp.solutions.hands
         self.hands = self.mp_hands.Hands(mode, max_hands, model_complexity, detection_con, track_con)
         self.result = None
+
+    def read_img(self):
+        shm_buf = self.shm_frame.buf
+        if shm_buf == shm_cfg.FLAG_IDLE:
+            frame_array = np.ndarray((shm_cfg.HEIGHT, shm_cfg.WIDTH, shm_cfg.CHANNELS), dtype=np.uint8, buffer=shm_buf, offset=1)
+            return cv2.cvtColor(frame_array, cv2.COLOR_BGR2RGB)
+        
+        return None
 
     def cleanup(self):
         if self.shm_frame:
