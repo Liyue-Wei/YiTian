@@ -88,7 +88,7 @@ def fingering_corrector():
     pass
 
 def main():
-    camera(1)
+    pass
 
 if __name__ == "__main__":
     main()
