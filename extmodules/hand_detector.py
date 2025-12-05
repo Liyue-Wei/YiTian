@@ -43,7 +43,7 @@ class HandDetector:
 
     def read_img(self):
         shm_buf = self.shm_frame.buf
-        if shm_buf == shm_cfg.FLAG_IDLE:
+        if shm_buf[0] == shm_cfg.FLAG_IDLE:
             frame_array = np.ndarray((shm_cfg.HEIGHT, shm_cfg.WIDTH, shm_cfg.CHANNELS), dtype=np.uint8, buffer=shm_buf, offset=1)
             return cv2.cvtColor(frame_array, cv2.COLOR_BGR2RGB)
         
