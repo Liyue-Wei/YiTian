@@ -11,6 +11,7 @@ import mediapipe as mp
 import numpy as np
 import shm_cfg
 import cv2
+import sys
 
 class HandDetector:
     def __init__(self, mode=False, max_hands=2, model_complexity=0, detection_con=0.75, track_con=0.75):
@@ -46,6 +47,10 @@ class HandDetector:
         if shm_buf[0] == shm_cfg.FLAG_IDLE:
             frame_array = np.ndarray((shm_cfg.HEIGHT, shm_cfg.WIDTH, shm_cfg.CHANNELS), dtype=np.uint8, buffer=shm_buf, offset=1)
             return cv2.cvtColor(frame_array, cv2.COLOR_BGR2RGB)
+        
+        elif shm_buf[0] == shm_cfg.FLAG_EXIT:
+            self.cleanup()
+            sys.exit(0)
         
         return None
     
