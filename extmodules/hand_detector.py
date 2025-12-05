@@ -28,5 +28,15 @@ class HandDetector:
                 temp_shm.unlink()
             shm_result = shared_memory.SharedMemory(create=True, size=shm_cfg.RESULT_SIZE, name=shm_cfg.SHM_RESULT_ID)
 
-    def cleanup():
-        pass
+    def cleanup(self):
+        if self.shm_frame:
+            self.shm_frame.close()
+            self.shm_frame = None
+
+        if self.shm_result:
+            self.shm_result.close()
+            try:
+                self.shm_result.unlink()
+            except:
+                pass
+            self.shm_result = None
