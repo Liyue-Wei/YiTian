@@ -46,6 +46,10 @@ class KeyboardListener:
             self.pressed_key = None
             return key
         
+    def stop_listener(self):
+        if self.listener:
+            self.listener.stop()
+            
 '''
 from extmodules import keyboard_listener
 
