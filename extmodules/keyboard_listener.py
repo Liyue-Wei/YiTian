@@ -50,6 +50,6 @@ class KeyboardListener:
 from extmodules import keyboard_listener
 
 kbl = keyboard_listener.KeyboardListener()
-
 key = kbl.get_key()
+if key != None: print(key)
 '''
