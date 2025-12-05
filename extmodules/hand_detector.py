@@ -7,11 +7,12 @@ Licensed under the GNU GPL v3.0 License.
 '''
 
 from multiprocessing import shared_memory
+import mediapipe as mp
 import shm_cfg
 import cv2
 
 class HandDetector:
-    def __init__(self):
+    def __init__(self, mode=False, max_hands=2, model_complexity=0, detection_con=0.75, track_con=0.75):
         self.shm_frame = None
         self.shm_result = None
 
@@ -34,6 +35,10 @@ class HandDetector:
                 raise RuntimeError(f"Unexpected error occurred: {e}")
             
             self.shm_result = shared_memory.SharedMemory(create=True, size=shm_cfg.RESULT_SIZE, name=shm_cfg.SHM_RESULT_ID)
+
+        self.mp_hands = mp.solutions.hands
+        self.hands = self.mp_hands.Hands(mode, max_hands, model_complexity, detection_con, track_con)
+        self.result = None
 
     def cleanup(self):
         if self.shm_frame:
