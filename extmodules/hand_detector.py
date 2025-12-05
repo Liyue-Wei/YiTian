@@ -48,6 +48,9 @@ class HandDetector:
             return cv2.cvtColor(frame_array, cv2.COLOR_BGR2RGB)
         
         return None
+    
+    def find_hands(self):
+        pass
 
     def cleanup(self):
         if self.shm_frame:
