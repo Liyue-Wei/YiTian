@@ -10,6 +10,7 @@ from multiprocessing import shared_memory
 import mediapipe as mp
 import numpy as np
 import shm_cfg
+import struct
 import cv2
 import sys
 
@@ -55,7 +56,7 @@ class HandDetector:
         return None
     
     def find_hands(self, img):
-        pass
+        self.result = self.hands.process(img)
 
     def cleanup(self):
         if self.shm_frame:
