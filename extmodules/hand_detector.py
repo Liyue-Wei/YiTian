@@ -10,7 +10,6 @@ from multiprocessing import shared_memory
 import mediapipe as mp
 import numpy as np
 import shm_cfg
-import struct
 import cv2
 import sys
 
