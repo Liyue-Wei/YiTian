@@ -61,8 +61,15 @@ class HandDetector:
         if self.result.multi_hand_landmarks:
             count = len(self.result.multi_hand_landmarks)
             shm_buf[0] = min(count, 2)
-
             result_arr = np.ndarray(((shm_cfg.RESULT_SIZE - 4) // 4,), dtype=np.float32, buffer=shm_buf, offset=4)
+
+            index = 0
+            for hand_lms, hand_info in zip(self.result.multi_hand_landmarks, self.result.multi_handedness):
+                result_arr[index] = 1.0 if hand_info.classification[0].label == 'Right' else 0.0
+                result_arr[index+1] = hand_info.classification[0].score
+                lms_np = np.array([[lm.x, lm.y, lm.z] for lm in hand_lms.landmark], dtype=np.float32)
+                result_arr[index+2 : index+65] = lms_np.flatten()
+                index += 65
 
         else:
             shm_buf[0] = 0
