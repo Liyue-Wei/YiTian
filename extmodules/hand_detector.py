@@ -88,11 +88,11 @@ class HandDetector:
             self.shm_result = None
 
 def main():
-    detector = HandDetector()
+    detector = None
     try:
-        pass
-    except:
-        pass
+        detector = HandDetector()
+    except Exception as e:
+        print(f"Error: {e}")
     finally:
         pass
 
