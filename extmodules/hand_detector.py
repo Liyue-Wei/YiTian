@@ -60,11 +60,12 @@ class HandDetector:
 
         if self.result.multi_hand_landmarks:
             count = len(self.result.multi_hand_landmarks)
-            shm_buf = count
+            shm_buf[0] = min(count, 2)
+
+            result_arr = np.ndarray(((shm_cfg.RESULT_SIZE - 4) // 4,), dtype=np.float32, buffer=shm_buf, offset=4)
 
         else:
-            shm_buf = 0
-            pass
+            shm_buf[0] = 0
 
     def cleanup(self):
         if self.shm_frame:
