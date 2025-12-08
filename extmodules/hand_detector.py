@@ -91,10 +91,20 @@ def main():
     detector = None
     try:
         detector = HandDetector()
+        while True:
+            img = detector.read_img()
+            if img is False:
+                break
+            if img is None:
+                continue
+            detector.find_hands(img)
+
     except Exception as e:
         print(f"Error: {e}")
     finally:
-        pass
+        if detector:
+            detector.cleanup()
+        print("Process: Hand Detector closed.")
 
 if __name__ == "__main__":
     main()
