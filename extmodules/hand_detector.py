@@ -56,6 +56,15 @@ class HandDetector:
     
     def find_hands(self, img):
         self.result = self.hands.process(img)
+        shm_buf = self.shm_result.buf
+
+        if self.result.multi_hand_landmarks:
+            count = len(self.result.multi_hand_landmarks)
+            shm_buf = count
+
+        else:
+            shm_buf = 0
+            pass
 
     def cleanup(self):
         if self.shm_frame:
