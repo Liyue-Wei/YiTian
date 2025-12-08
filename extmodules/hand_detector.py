@@ -50,8 +50,7 @@ class HandDetector:
             return cv2.cvtColor(frame_array, cv2.COLOR_BGR2RGB)
         
         elif shm_buf[0] == shm_cfg.FLAG_EXIT:
-            self.cleanup()
-            sys.exit(0)
+            return False
         
         return None
     
@@ -89,7 +88,13 @@ class HandDetector:
             self.shm_result = None
 
 def main():
-    pass
+    detector = HandDetector()
+    try:
+        pass
+    except:
+        pass
+    finally:
+        pass
 
 if __name__ == "__main__":
     main()
