@@ -17,6 +17,7 @@ class HandDetector:
     def __init__(self, mode=False, max_hands=2, model_complexity=0, detection_con=0.75, track_con=0.75):
         self.shm_frame = None
         self.shm_result = None
+        self.float_arr_len = (shm_cfg.RESULT_SIZE - 4) // 4
 
         try:
             self.shm_frame = shared_memory.SharedMemory(name=shm_cfg.SHM_FRAME_ID)
@@ -61,7 +62,7 @@ class HandDetector:
         if self.result.multi_hand_landmarks:
             count = len(self.result.multi_hand_landmarks)
             shm_buf[0] = min(count, 2)
-            result_arr = np.ndarray(((shm_cfg.RESULT_SIZE - 4) // 4,), dtype=np.float32, buffer=shm_buf, offset=4)
+            result_arr = np.ndarray((self.float_arr_len,), dtype=np.float32, buffer=shm_buf, offset=4)
 
             index = 0
             for hand_lms, hand_info in zip(self.result.multi_hand_landmarks, self.result.multi_handedness):
