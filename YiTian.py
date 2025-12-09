@@ -63,6 +63,8 @@ def camera(num, stop_event):
             try:
                 shm_buf[0] = shm_cfg.FLAG_WRITING
                 frame_array[:] = img
+            except:
+                pass
             finally:
                 shm_buf[0] = shm_cfg.FLAG_IDLE
 
