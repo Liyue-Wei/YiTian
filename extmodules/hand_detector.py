@@ -11,7 +11,6 @@ import mediapipe as mp
 import numpy as np
 import shm_cfg
 import cv2
-import sys
 
 class HandDetector:
     def __init__(self, mode=False, max_hands=2, model_complexity=0, detection_con=0.75, track_con=0.75):
