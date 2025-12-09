@@ -20,7 +20,7 @@ import time
 # from PIL import Image, ImageTk
 import tkinter as tk
 
-def camera(num):
+def camera(num, stop_event):
     cam = None
     shm_frame = None
     try:
@@ -56,7 +56,7 @@ def camera(num):
         shm_buf[0] = shm_cfg.FLAG_IDLE
         frame_array = np.ndarray((res[1], res[0], shm_cfg.CHANNELS), dtype=np.uint8, buffer=shm_buf, offset=1)
 
-        while shm_buf[0] != shm_cfg.FLAG_EXIT:
+        while not stop_event.is_set():
             ret, img = cam.read()
             if not ret:
                 raise IOError("Frame can not be read")
@@ -79,6 +79,7 @@ def camera(num):
                 shm_buf[0] = shm_cfg.FLAG_EXIT
                 print("Process: Sent EXIT flag to HandDector.")
                 time.sleep(0.1)
+
                 shm_frame.close()
                 shm_frame.unlink()
                 print("Process: Shared Memory cleared.")
