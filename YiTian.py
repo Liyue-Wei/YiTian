@@ -11,7 +11,6 @@ from extmodules import keyboard_listener
 import multiprocessing
 from multiprocessing import shared_memory
 import cv2
-import struct
 import subprocess
 import numpy as np
 import time
