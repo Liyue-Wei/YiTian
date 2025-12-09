@@ -49,6 +49,7 @@ class HandDetector:
             return cv2.cvtColor(frame_array, cv2.COLOR_BGR2RGB)
         
         elif shm_buf[0] == shm_cfg.FLAG_EXIT:
+            print("Process: Received EXIT Flag.")
             return False
         
         return None

@@ -14,6 +14,7 @@ import cv2
 import struct
 import subprocess
 import numpy as np
+import time
 # import customtkinter as ctk
 # import pywinstyles
 # from PIL import Image, ImageTk
@@ -75,6 +76,9 @@ def camera(num):
         
         if shm_frame is not None:
             try:
+                shm_buf[0] = shm_cfg.FLAG_EXIT
+                print("Process: Sent EXIT flag to HandDector.")
+                time.sleep(0.1)
                 shm_frame.close()
                 shm_frame.unlink()
                 print("Process: Shared Memory cleared.")
