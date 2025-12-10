@@ -208,9 +208,9 @@ class TypingCorrector:
 # 測試代碼(保持註解狀態)
 
 if __name__ == "__main__":
-    cap = cv2.VideoCapture(1)
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+    cap = cv2.VideoCapture(0)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
     
     detector = HandDetector(mode=False, max_hands=2, model_complexity=0, detection_con=0.75, track_con=0.75)
     mp_drawing = mp.solutions.drawing_utils
