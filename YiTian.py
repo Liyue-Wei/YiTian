@@ -19,6 +19,9 @@ import time
 # from PIL import Image, ImageTk
 import tkinter as tk
 
+class TypingCorrector:
+    pass
+
 def camera(num, stop_event):
     cam = None
     shm_frame = None
