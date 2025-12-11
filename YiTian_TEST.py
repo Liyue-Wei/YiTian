@@ -123,7 +123,7 @@ def main():
     
     # 1. 启动摄像头线程 (生产者)
     stop_event = multiprocessing.Event()
-    cam_thread = threading.Thread(target=camera, args=(0, stop_event))
+    cam_thread = threading.Thread(target=camera, args=(1, stop_event))
     cam_thread.start()
     
     print("Main: Camera thread started.")

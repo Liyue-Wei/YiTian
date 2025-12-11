@@ -13,7 +13,7 @@ import shm_cfg
 import cv2
 
 class HandDetector:
-    def __init__(self, mode=False, max_hands=2, model_complexity=0, detection_con=0.75, track_con=0.75):
+    def __init__(self, mode=False, max_hands=2, model_complexity=0, detection_con=0.85, track_con=0.85):
         self.shm_frame = None
         self.shm_result = None
         self.float_arr_len = (shm_cfg.RESULT_SIZE - 4) // 4
