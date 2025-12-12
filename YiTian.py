@@ -47,9 +47,9 @@ def camera(num, stop_event):
         
         try:
             shm_frame = shared_memory.SharedMemory(create=True, size=shm_cfg.FRAME_SIZE, name=shm_cfg.SHM_FRAME_ID)
-            print("Process: Shared Memory created.")
+            print("Process: Shared Memory Frame created.")
         except FileExistsError:
-            print("Process: Shared Memory already exists. Cleaning up...")
+            print("Process: Shared Memory Frame already exists. Cleaning up...")
             with shared_memory.SharedMemory(name=shm_cfg.SHM_FRAME_ID) as temp_shm:
                 temp_shm.unlink()
             shm_frame = shared_memory.SharedMemory(create=True, size=shm_cfg.FRAME_SIZE, name=shm_cfg.SHM_FRAME_ID)
@@ -86,6 +86,7 @@ def camera(num, stop_event):
 
                 shm_frame.close()
                 shm_frame.unlink()
+                shm_frame = None
                 print("Process: Shared Memory cleared.")
             except Exception as e:
                 print(f"Error: Cleaning up shared memory failed: {e}")

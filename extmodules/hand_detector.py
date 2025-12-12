@@ -20,11 +20,13 @@ class HandDetector:
 
         try:
             self.shm_frame = shared_memory.SharedMemory(name=shm_cfg.SHM_FRAME_ID)
+            print("Process: Shared Memory Frame connected.")
         except FileNotFoundError:
             raise FileNotFoundError(f"Shared Memory unavaliable: {shm_cfg.SHM_FRAME_ID}")
         
         try:
             self.shm_result = shared_memory.SharedMemory(create=True, size=shm_cfg.RESULT_SIZE, name=shm_cfg.SHM_RESULT_ID)
+            print("Process: Shared Memory Result created.")
         except FileExistsError:
             print("Process: Shared Memory already exists. Cleaning up...")
             try:
@@ -87,8 +89,8 @@ class HandDetector:
                 pass
             self.shm_result = None
 
-    def fps_calibration(self):
-        pass
+def fps_calibration():
+    pass
 
 def main():
     detector = None
