@@ -91,7 +91,7 @@ class HandDetector:
             self.shm_result = None
 
 def fps_calibration():
-    pass
+    detector = None
 
 def main():
     detector = None
