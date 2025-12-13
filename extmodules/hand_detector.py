@@ -92,6 +92,7 @@ class HandDetector:
 
 def fps_calibration():
     detector = None
+    img = None
 
 def main():
     detector = None
