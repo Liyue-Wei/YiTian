@@ -11,6 +11,7 @@ import mediapipe as mp
 import numpy as np
 import shm_cfg
 import cv2
+import time
 
 class HandDetector:
     def __init__(self, mode=False, max_hands=2, model_complexity=0, detection_con=0.85, track_con=0.85):
@@ -90,7 +91,19 @@ class HandDetector:
             self.shm_result = None
 
 def fps_calibration():
-    pass
+    detector = None
+    try:
+        detector = HandDetector()
+        start = time.time()
+        img = detector.read_img()
+        while not img is None:
+            detector.find_hands(img)
+        end = time.time()
+        runtime = end - start
+        return runtime
+
+    except Exception as e:
+        return e
 
 def main():
     detector = None
