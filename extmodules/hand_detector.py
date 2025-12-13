@@ -91,19 +91,7 @@ class HandDetector:
             self.shm_result = None
 
 def fps_calibration():
-    detector = None
-    try:
-        detector = HandDetector()
-        start = time.time()
-        img = detector.read_img()
-        while not img is None:
-            detector.find_hands(img)
-        end = time.time()
-        runtime = end - start
-        return runtime
-
-    except Exception as e:
-        return e
+    pass
 
 def main():
     detector = None
