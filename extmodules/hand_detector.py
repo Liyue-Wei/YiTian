@@ -94,9 +94,15 @@ def fps_calibration():
     detector = None
     img = None
     try:
-        pass
-    except:
-        pass
+        detector = HandDetector()
+        img = detector.read_img()
+        while img is None:
+            try:
+                img = detector.read_img()
+            except:
+                time.sleep(0.01)
+    except Exception as e:
+        return e
     finally:
         pass
 
