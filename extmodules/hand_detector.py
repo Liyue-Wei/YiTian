@@ -104,7 +104,8 @@ def fps_calibration():
     except Exception as e:
         return e
     finally:
-        pass
+        if detector:
+            detector.cleanup()
 
 def main():
     detector = None
