@@ -93,6 +93,9 @@ class HandDetector:
                 pass
             self.shm_result = None
 
+'''
+wait for version 2.0 update
+
 def fps_calibration():
     detector = None
     img = None
@@ -119,6 +122,7 @@ def fps_calibration():
     finally:
         if detector:
             detector.cleanup()
+'''
 
 def main():
     detector = None
