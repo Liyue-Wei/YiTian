@@ -8,7 +8,6 @@ Licensed under the GNU GPL v3.0 License.
 
 from extmodules import shm_cfg
 from extmodules import keyboard_listener
-from extmodules import hand_detector
 import multiprocessing
 from multiprocessing import shared_memory
 import cv2
