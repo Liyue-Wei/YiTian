@@ -12,4 +12,9 @@ import shm_cfg
 import cv2
 
 class FingeringCorrector:
-    pass
+    def __init__(self):
+        pass
+
+class KeyMap:
+    def __init__(self):
+        pass
