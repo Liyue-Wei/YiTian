@@ -20,9 +20,6 @@ import time
 # from PIL import Image, ImageTk
 import tkinter as tk
 
-class TypingCorrector:
-    pass
-
 def camera(num, stop_event, interval):
     cam = None
     shm_frame = None
@@ -92,12 +89,6 @@ def camera(num, stop_event, interval):
                 print("Process: Shared Memory cleared.")
             except Exception as e:
                 print(f"Error: Cleaning up shared memory failed: {e}")
-
-def hand_detector():
-    pass
-
-def fingering_corrector():
-    pass
 
 def main():
     pass
