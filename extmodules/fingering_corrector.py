@@ -7,13 +7,16 @@ Licensed under the GNU GPL v3.0 License.
 '''
 
 from multiprocessing import shared_memory
+from extmodules import shm_cfg
 import numpy as np
-import shm_cfg
 import cv2
 
 class FingeringCorrector:
     def __init__(self):
-        pass
+        self.shm_frame = None
+        self.shm_result = None
+        self.WIDTH = shm_cfg.WIDTH
+        self.HEIGHT = shm_cfg.HEIGHT
 
     def key_map_calibration(self):
-        pass
+        anchor = ['q', 'p', 'z', 'm']
