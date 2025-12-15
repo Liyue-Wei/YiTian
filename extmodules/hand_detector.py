@@ -98,8 +98,8 @@ def fps_calibration():
         detector = HandDetector()
         while (img := detector.read_img()) is None:
             time.sleep(0.01)
-            
-        for i in range (120):
+
+        for _ in range (120):
             while (img := detector.read_img()) is None:
                 time.sleep(0.01)
             start = time.perf_counter()
