@@ -20,7 +20,7 @@ import time
 # from PIL import Image, ImageTk
 import tkinter as tk
 
-def camera(num, stop_event, interval):
+def camera(num, stop_event):
     cam = None
     shm_frame = None
     try:
@@ -68,7 +68,6 @@ def camera(num, stop_event, interval):
                 pass
             finally:
                 shm_buf[0] = shm_cfg.FLAG_IDLE
-                time.sleep(interval)
 
     except Exception as e:
         print(f"Error: {e}")
