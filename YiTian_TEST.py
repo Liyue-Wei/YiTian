@@ -8,6 +8,7 @@ Licensed under the GNU GPL v3.0 License.
 
 from extmodules import shm_cfg
 from extmodules import keyboard_listener
+from extmodules import hand_detector  # 【新增】导入 hand_detector 模块
 import multiprocessing
 from multiprocessing import shared_memory
 import cv2
@@ -19,7 +20,8 @@ import time
 # from PIL import Image, ImageTk
 import tkinter as tk
 
-def camera(num, stop_event):
+# 【修改】增加 sleep_ref 参数，用于动态控制帧率
+def camera(num, stop_event, sleep_ref):
     cam = None
     shm_frame = None
     try:
@@ -56,6 +58,8 @@ def camera(num, stop_event):
         frame_array = np.ndarray((res[1], res[0], shm_cfg.CHANNELS), dtype=np.uint8, buffer=shm_buf, offset=1)
 
         while not stop_event.is_set():
+            loop_start = time.perf_counter()  # 【新增】开始计时
+
             ret, img = cam.read()
             if not ret:
                 raise IOError("Frame can not be read")
@@ -67,6 +71,15 @@ def camera(num, stop_event):
                 pass
             finally:
                 shm_buf[0] = shm_cfg.FLAG_IDLE
+            
+            # 【新增】智能休眠逻辑
+            # 计算工作耗时，用目标间隔减去耗时，得到需要 sleep 的时间
+            work_cost = time.perf_counter() - loop_start
+            target_interval = sleep_ref[0]
+            sleep_time = target_interval - work_cost
+            
+            if sleep_time > 0:
+                time.sleep(sleep_time)
 
     except Exception as e:
         print(f"Error: {e}")
@@ -87,11 +100,11 @@ def camera(num, stop_event):
             except Exception as e:
                 print(f"Error: Cleaning up shared memory failed: {e}")
 
-def hand_detector():
-    pass
+# def hand_detector():
+#     pass
 
-def fingering_corrector():
-    pass
+# def fingering_corrector():
+#     pass
 
 # 【新增】绘图工具函数
 def draw_landmarks(img, landmarks):
@@ -123,7 +136,9 @@ def main():
     
     # 1. 启动摄像头线程 (生产者)
     stop_event = multiprocessing.Event()
-    cam_thread = threading.Thread(target=camera, args=(1, stop_event))
+    # 【修改】传入 sleep_ref，初始值为 0 (全速运行)
+    sleep_ref = [0.0] 
+    cam_thread = threading.Thread(target=camera, args=(1, stop_event, sleep_ref))
     cam_thread.start()
     
     print("Main: Camera thread started.")
@@ -143,6 +158,23 @@ def main():
             except FileNotFoundError:
                 time.sleep(0.5)
         
+        # 【新增】执行 FPS 校准
+        print("Main: Performing FPS Calibration (Please wait)...")
+        try:
+            # 调用 hand_detector 中的校准函数
+            # 注意：这会临时创建一个 HandDetector 实例读取 SHM_FRAME
+            calib_fps, calib_elapsed = hand_detector.fps_calibration()
+            
+            print(f"Main: Calibration Result -> Max FPS: {calib_fps:.2f}, Latency: {calib_elapsed*1000:.2f}ms")
+            
+            # 设置安全间隔 (1.1倍延迟，留出10%余量)
+            safe_interval = calib_elapsed * 1.1
+            sleep_ref[0] = safe_interval
+            print(f"Main: Camera sync interval set to {safe_interval*1000:.2f}ms (Target FPS: {1/safe_interval:.2f})")
+            
+        except Exception as e:
+            print(f"Main: Calibration failed: {e}. Camera will run at max speed.")
+
         # 等待 hand_detector 创建 SHM_RESULT (你需要手动运行 hand_detector.py)
         print("Main: Waiting for SHM_RESULT (Please run hand_detector.py)...")
         while not stop_event.is_set():
