@@ -93,16 +93,26 @@ class HandDetector:
 def fps_calibration():
     detector = None
     img = None
+    elapsed = 0
     try:
         detector = HandDetector()
-        img = detector.read_img()
-        while img is None:
-            try:
-                img = detector.read_img()
-            except:
+        while (img := detector.read_img()) is None:
+            time.sleep(0.01)
+            
+        for i in range (120):
+            while (img := detector.read_img()) is None:
                 time.sleep(0.01)
+            start = time.perf_counter()
+            detector.find_hands(img)
+            end = time.perf_counter()
+            elapsed += (end - start)
+        elapsed = elapsed / 120
+        fps = 1 / elapsed if elapsed > 0 else 0
+
+        return fps, elapsed
+
     except Exception as e:
-        return e
+        return RuntimeError(f"Unexpected error occurred: {e}")
     finally:
         if detector:
             detector.cleanup()
