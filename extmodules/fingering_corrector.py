@@ -15,6 +15,5 @@ class FingeringCorrector:
     def __init__(self):
         pass
 
-class KeyMap:
-    def __init__(self):
+    def key_map_calibration(self):
         pass
