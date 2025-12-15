@@ -23,7 +23,7 @@ import tkinter as tk
 class TypingCorrector:
     pass
 
-def camera(num, stop_event):
+def camera(num, stop_event, interval):
     cam = None
     shm_frame = None
     try:
@@ -71,6 +71,7 @@ def camera(num, stop_event):
                 pass
             finally:
                 shm_buf[0] = shm_cfg.FLAG_IDLE
+                time.sleep(interval)
 
     except Exception as e:
         print(f"Error: {e}")
