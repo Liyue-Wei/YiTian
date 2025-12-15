@@ -9,10 +9,13 @@ Licensed under the GNU GPL v3.0 License.
 from multiprocessing import shared_memory
 import mediapipe as mp
 import numpy as np
-import shm_cfg
 import cv2
 import time
-
+try:
+    import shm_cfg
+except ModuleNotFoundError:
+    from extmodules import shm_cfg
+    
 class HandDetector:
     def __init__(self, mode=False, max_hands=2, model_complexity=0, detection_con=0.85, track_con=0.85):
         self.shm_frame = None
