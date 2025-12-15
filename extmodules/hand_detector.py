@@ -110,7 +110,7 @@ def fps_calibration():
             end = time.perf_counter()
             elapsed += (end - start)
         elapsed = elapsed / 120
-        fps = 1 / elapsed if elapsed > 0 else 0
+        fps = int(1 / elapsed) if elapsed > 0 else 0
 
         return fps, elapsed
 
