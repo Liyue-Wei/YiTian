@@ -19,7 +19,6 @@ class FingeringCorrector:
         self.HEIGHT = shm_cfg.HEIGHT
         self.key_layout = ["qwertyuiop", "asdfghjkl", "zxcvbnm"]
         self.key_map = {}
-
         self.finger_map = {
             'q': 'LEFT_PINKY', 'a': 'LEFT_PINKY', 'z': 'LEFT_PINKY', 
             'w': 'LEFT_RING', 's': 'LEFT_RING', 'x': 'LEFT_RING',
@@ -37,7 +36,13 @@ class FingeringCorrector:
         self.fingertip_indices = {
             "RIGHT_THUMB": 4, "RIGHT_INDEX": 8, "RIGHT_MIDDLE": 12, "RIGHT_RING": 16, "RIGHT_PINKY": 20,
             "LEFT_THUMB": 4, "LEFT_INDEX": 8, "LEFT_MIDDLE": 12, "LEFT_RING": 16, "LEFT_PINKY": 20
-        }        
+        } 
+
+        try:
+            self.shm_result = shared_memory.SharedMemory(name=shm_cfg.SHM_RESULT_ID)
+            print("Process: Shared Memory Result connected.")
+        except FileNotFoundError:
+            raise FileNotFoundError(f"Shared Memory unavaliable: {shm_cfg.SHM_RESULT_ID}")      
 
     def key_map_calibration(self):
         anchor = ['q', 'p', 'z', 'm']
