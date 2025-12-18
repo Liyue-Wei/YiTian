@@ -91,6 +91,9 @@ def camera(num, stop_event):
 
 class YiTian:
     def __init__(self):
+        self.stop_event = multiprocessing.Event()
+        self.cam_proc = None
+        self.hd = None
         self.kbl = None
         self.fc = None
 
