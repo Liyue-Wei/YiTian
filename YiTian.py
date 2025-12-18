@@ -99,8 +99,16 @@ class YiTian:
         self.kbl = None
         self.fc = None
 
-    def start_cam(self):
+    def start_cam(self, num):
         print("Process: Starting Camera.")
+        self.cam_proc = multiprocessing.Process(target=camera, args=(num, self.stop_event, self.ready_event))
+        self.cam_proc.start()
+
+        if self.ready_event.wait(timeout=15):
+            pass
+        else:
+            print("Error: Unexpected Error occurred when opening camera")
+            return False
 
 if __name__ == "__main__":
     main = YiTian()
