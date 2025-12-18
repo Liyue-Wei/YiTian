@@ -89,13 +89,10 @@ def camera(num, stop_event):
             except Exception as e:
                 print(f"Error: Cleaning up shared memory failed: {e}")
 
-def key_map_calibration():
-    pass
-
 class YiTian:
     def __init__(self):
-        self.kbl = keyboard_listener.KeyboardListener()
-        self.fc = fingering_corrector.FingeringCorrector()
+        self.kbl = None
+        self.fc = None
 
 if __name__ == "__main__":
     main = YiTian()
