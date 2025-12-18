@@ -105,10 +105,13 @@ class YiTian:
         self.cam_proc.start()
 
         if self.ready_event.wait(timeout=15):
-            pass
+            print("Process: Camera is ready.")
         else:
-            print("Error: Unexpected Error occurred when opening camera")
+            print("Error: Unexpected Error occurred when opening camera.")
             return False
+        
+    def start_hd(self):
+        print("Process: Starting Hand Detector.")
 
 if __name__ == "__main__":
     main = YiTian()
