@@ -95,7 +95,7 @@ class YiTian:
         self.stop_event = multiprocessing.Event()
         self.ready_event = multiprocessing.Event()
         self.cam_proc = None
-        self.hd = None
+        self.hd_proc = None
         self.kbl = None
         self.fc = None
 
@@ -112,6 +112,10 @@ class YiTian:
         
     def start_hd(self):
         print("Process: Starting Hand Detector.")
+        try:
+            self.hd_proc = subprocess.Popen(["python", "extmodules/hand_detector.py"])
+        except Exception as e:
+            print(f"Error: Failed to start Hand Detector: {e}")
 
 if __name__ == "__main__":
     main = YiTian()
