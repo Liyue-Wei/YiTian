@@ -119,5 +119,8 @@ class YiTian:
         except Exception as e:
             print(f"Error: Failed to start Hand Detector: {e}")
 
+    def quit(self):
+        pass
+
 if __name__ == "__main__":
     main = YiTian()
