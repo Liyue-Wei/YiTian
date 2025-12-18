@@ -15,8 +15,8 @@ class FingeringCorrector:
     def __init__(self):
         self.shm_frame = None
         self.shm_result = None
-        self.WIDTH = shm_cfg.WIDTH
-        self.HEIGHT = shm_cfg.HEIGHT
+        # self.WIDTH = shm_cfg.WIDTH
+        # self.HEIGHT = shm_cfg.HEIGHT
         self.key_layout = ["qwertyuiop", "asdfghjkl", "zxcvbnm"]
         self.key_map = {}
         self.finger_map = {
@@ -44,5 +44,10 @@ class FingeringCorrector:
         except FileNotFoundError:
             raise FileNotFoundError(f"Shared Memory unavaliable: {shm_cfg.SHM_RESULT_ID}")      
 
-    def key_map_calibration(self):
+    def key_map_calibration(self, key):
         anchor = ['q', 'p', 'z', 'm']
+        index = 0
+        coord_cal_point = {}
+
+        for _ in range(4):
+            pass
