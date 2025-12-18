@@ -99,5 +99,8 @@ class YiTian:
         self.kbl = None
         self.fc = None
 
+    def start_cam(self):
+        print("Process: Starting Camera.")
+
 if __name__ == "__main__":
     main = YiTian()
