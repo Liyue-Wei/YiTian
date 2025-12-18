@@ -20,7 +20,7 @@ import time
 # from PIL import Image, ImageTk
 import tkinter as tk
 
-def camera(num, stop_event):
+def camera(num, stop_event, ready_event):
     cam = None
     shm_frame = None
     try:
@@ -46,6 +46,7 @@ def camera(num, stop_event):
         try:
             shm_frame = shared_memory.SharedMemory(create=True, size=shm_cfg.FRAME_SIZE, name=shm_cfg.SHM_FRAME_ID)
             print("Process: Shared Memory Frame created.")
+            ready_event.set()
         except FileExistsError:
             print("Process: Shared Memory Frame already exists. Cleaning up...")
             with shared_memory.SharedMemory(name=shm_cfg.SHM_FRAME_ID) as temp_shm:
@@ -92,6 +93,7 @@ def camera(num, stop_event):
 class YiTian:
     def __init__(self):
         self.stop_event = multiprocessing.Event()
+        self.ready_event = multiprocessing.Event()
         self.cam_proc = None
         self.hd = None
         self.kbl = None
