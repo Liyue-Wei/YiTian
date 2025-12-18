@@ -45,9 +45,4 @@ class FingeringCorrector:
             raise FileNotFoundError(f"Shared Memory unavaliable: {shm_cfg.SHM_RESULT_ID}")      
 
     def key_map_calibration(self, key):
-        anchor = ['q', 'p', 'z', 'm']
-        index = 0
-        coord_cal_point = {}
-
-        for _ in range(4):
-            pass
+        pass
