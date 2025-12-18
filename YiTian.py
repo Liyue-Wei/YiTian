@@ -114,6 +114,7 @@ class YiTian:
         print("Process: Starting Hand Detector.")
         try:
             self.hd_proc = subprocess.Popen(["python", "extmodules/hand_detector.py"], creationflags=subprocess.CREATE_NEW_CONSOLE)
+            print(f"Process: Hand Detector started with PID: {self.hd_proc.pid}")
         except Exception as e:
             print(f"Error: Failed to start Hand Detector: {e}")
 
