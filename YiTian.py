@@ -120,7 +120,7 @@ class YiTian:
             print(f"Error: Failed to start Hand Detector: {e}")
 
     def quit(self):
-        pass
+        print("\nSystem: Quitting...")
 
 if __name__ == "__main__":
     main = YiTian()
