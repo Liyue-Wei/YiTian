@@ -156,4 +156,5 @@ class YiTian:
             self.hd_proc = None
 
 if __name__ == "__main__":
+    multiprocessing.freeze_support()
     main = YiTian()
