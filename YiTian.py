@@ -120,7 +120,19 @@ class YiTian:
             print(f"Error: Failed to start Hand Detector: {e}")
 
     def quit(self):
-        print("\nSystem: Quitting...")
+        print("Process: Quitting...")
+        self.stop_event.set()
+        if self.kbl is not None:
+            print("Process: Stopping Keyboard Listener.")
+            try:
+                self.kbl.stop_listener()
+            except Exception as e:
+                print(f"Error: Failed to stop listener: {e}\nProcess: Skipped...")
+
+        if self.cam_proc is not None and self.cam_proc.is_alive():
+            self.cam_proc.join(timeout=5)
+            if self.cam_proc.is_alive():
+                self.cam_proc.terminate()
 
 if __name__ == "__main__":
     main = YiTian()
