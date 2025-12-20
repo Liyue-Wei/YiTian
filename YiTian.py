@@ -11,6 +11,8 @@ from extmodules import keyboard_listener
 from extmodules import fingering_corrector
 import multiprocessing
 from multiprocessing import shared_memory
+import sys
+import os
 import cv2
 import subprocess
 import numpy as np
@@ -113,7 +115,9 @@ class YiTian:
     def start_hd(self):
         print("Process: Starting Hand Detector.")
         try:
-            self.hd_proc = subprocess.Popen(["python", "extmodules/hand_detector.py"], creationflags=subprocess.CREATE_NEW_CONSOLE)
+            python_exec = sys.executable
+            hd_path = os.path.join(os.path.dirname(__file__), "extmodules", "hand_detector.py")
+            self.hd_proc = subprocess.Popen([python_exec, hd_path], creationflags=subprocess.CREATE_NEW_CONSOLE)
             time.sleep(5)
             print(f"Process: Hand Detector started with PID: {self.hd_proc.pid}")
         except Exception as e:
