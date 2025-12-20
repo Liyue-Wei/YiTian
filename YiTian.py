@@ -106,11 +106,10 @@ class YiTian:
         self.cam_proc = multiprocessing.Process(target=camera, args=(num, self.stop_event, self.ready_event))
         self.cam_proc.start()
 
-        try:
-            self.ready_event.wait(timeout=15)
-        except Exception as e:
-            print(f"Error: Failed to start Camera: {e}")
+        if not self.ready_event.wait(timeout=15):
+            print("Error: Camera initialization timed out.")
             return False
+        return True
         
     def start_hd(self):
         print("Process: Starting Hand Detector.")
