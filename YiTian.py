@@ -106,10 +106,10 @@ class YiTian:
         self.cam_proc = multiprocessing.Process(target=camera, args=(num, self.stop_event, self.ready_event))
         self.cam_proc.start()
 
-        if self.ready_event.wait(timeout=15):
-            print("Process: Camera is ready.")
-        else:
-            print("Error: Unexpected Error occurred when opening camera.")
+        try:
+            self.ready_event.wait(timeout=15)
+        except Exception as e:
+            print(f"Error: Failed to start Camera: {e}")
             return False
         
     def start_hd(self):
@@ -122,9 +122,18 @@ class YiTian:
             print(f"Process: Hand Detector started with PID: {self.hd_proc.pid}")
         except Exception as e:
             print(f"Error: Failed to start Hand Detector: {e}")
+            return False
 
     def init_modules(self):
-        pass
+        try:
+            print("Process: Initializing Keyboard Listener.")
+            self.kbl = keyboard_listener.KeyboardListener()
+            print("Process: Initializing Fingering Corrector.")
+            self.fc = fingering_corrector.FingeringCorrector()
+            return True
+        except Exception as e:
+            print(f"Error: Module initialization failed: {e}")
+            return False
 
     def quit(self):
         print("Process: Quitting...")
