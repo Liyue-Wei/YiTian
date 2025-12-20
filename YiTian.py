@@ -128,11 +128,17 @@ class YiTian:
                 self.kbl.stop_listener()
             except Exception as e:
                 print(f"Error: Failed to stop listener: {e}\nProcess: Skipped...")
+            self.kbl = None
 
         if self.cam_proc is not None and self.cam_proc.is_alive():
             self.cam_proc.join(timeout=5)
             if self.cam_proc.is_alive():
                 self.cam_proc.terminate()
+            self.cam_proc = None
+
+        if self.hd_proc is not None:
+            self.hd_proc.terminate()
+            self.hd_proc = None
 
 if __name__ == "__main__":
     main = YiTian()
