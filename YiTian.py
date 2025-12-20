@@ -133,6 +133,9 @@ class YiTian:
         except Exception as e:
             print(f"Error: Module initialization failed: {e}")
             return False
+        
+    def run(self):
+        pass
 
     def quit(self):
         print("Process: Quitting...")
