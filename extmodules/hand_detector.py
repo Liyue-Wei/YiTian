@@ -133,6 +133,7 @@ def main():
             if img is False:
                 break
             if img is None:
+                time.sleep(0.001)
                 continue
             detector.find_hands(img)
 
