@@ -123,6 +123,9 @@ class YiTian:
         except Exception as e:
             print(f"Error: Failed to start Hand Detector: {e}")
 
+    def init_modules(self):
+        pass
+
     def quit(self):
         print("Process: Quitting...")
         self.stop_event.set()
