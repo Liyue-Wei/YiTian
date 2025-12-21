@@ -84,8 +84,16 @@ class FingeringCorrector:
         except Exception as e:
             raise(f"Error: Unexpected error occurred: {e}")
 
-    def key_map_calibration(self, key):
-        pass
+    def key_map_calibration(self, pressed_key, finger_pos):
+        if not finger_pos:
+            return False
+        
+        if self.ak_idx >= len(self.anchor_key):
+            return False
+        
+        target_key = self.anchor_key[self.ak_idx]
+        if pressed_key == target_key:
+            pass
 
     def get_pressing_key(self, landmark, width, height):
         if not landmark: 
