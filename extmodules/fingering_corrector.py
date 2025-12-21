@@ -50,9 +50,34 @@ class FingeringCorrector:
             return []
         
         try:
-            pass
-        except:
-            pass
+            shm_buf = self.shm_result.buf
+            count = shm_buf[0]
+            if count == 0:
+                return []
+            
+            data_array = np.ndarray((self.float_arr_len,), dtype=np.float32, buffer=shm_buf, offset=4)
+            hands = []
+            for i in range(count):
+                interval = i * 65
+                label = "Left" if (data_array[interval] == 1.0) else "Right"
+                lm_flat = data_array[interval + 2 : interval + 65]
+                landmarks = []
+                for j in range(0, 63, 3):
+                    landmarks.append({
+                        'x': int(lm_flat[j] * self.WIDTH),
+                        'y': int(lm_flat[j+1] * self.HEIGHT),
+                        'z': lm_flat[j+2]
+                    })
+                
+                hands.append({
+                    'label': label,
+                    'landmarks': landmarks
+                })
+                
+            return hands
+        
+        except Exception as e:
+            raise(f"Error: Unexpected error occurred: {e}")
 
     def get_pressing_key(self, landmark, width, height):
         if not landmark: 
