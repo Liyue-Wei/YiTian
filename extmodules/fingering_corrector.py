@@ -152,6 +152,11 @@ class FingeringCorrector:
             print(f"Process: Unexpected error occurred: {e}")
             return False
 
-    def get_pressing_key(self, landmark, width, height):
+    def get_pressing_key(self, landmark):
         if not landmark: 
             return None
+        
+        fx = landmark['x']
+        fy = landmark['y']
+        min_dist = float('inf')
+        closest_key = None
