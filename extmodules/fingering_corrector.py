@@ -152,11 +152,42 @@ class FingeringCorrector:
             print(f"Process: Unexpected error occurred: {e}")
             return False
 
-    def get_pressing_key(self, landmark):
-        if not landmark: 
-            return None
-        
-        fx = landmark['x']
-        fy = landmark['y']
+    def check_fingering(self, typed_key, hands_data):
+        if not typed_key or typed_key not in self.key_map: 
+            return None, None
+            
+        correct_finger_name = self.finger_map.get(typed_key)
+        if not correct_finger_name: 
+            return "No rule", None
+            
+        target_key_pos = self.key_map[typed_key]
+        expected_hand_label = "Left" if correct_finger_name.startswith("LEFT") else "Right"
+        expected_finger_idx = self.fingertip_indices[correct_finger_name]
+        for hand in hands_data:
+            if hand['label'] == expected_hand_label:
+                lm = hand['landmarks'][expected_finger_idx]
+                dist = np.hypot(lm['x'] - target_key_pos[0], lm['y'] - target_key_pos[1])
+                if dist < 30: 
+                    return "Correct", correct_finger_name
+
         min_dist = float('inf')
-        closest_key = None
+        actual_finger_name = "Unknown"
+        for hand in hands_data:
+            hand_prefix = "LEFT" if hand['label'] == "Left" else "RIGHT"
+            for fname, idx in self.fingertip_indices.items():
+                if not fname.startswith(hand_prefix): 
+                    continue
+                    
+                lm = hand['landmarks'][idx]
+                dist = np.hypot(lm['x'] - target_key_pos[0], lm['y'] - target_key_pos[1])
+                if dist < min_dist:
+                    min_dist = dist
+                    actual_finger_name = fname
+
+        if min_dist > 60:
+            return "Unknown", "Hand too far"
+            
+        if actual_finger_name == correct_finger_name:
+            return "Correct", correct_finger_name
+        
+        return "Wrong", actual_finger_name[6:]  
