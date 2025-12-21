@@ -17,6 +17,7 @@ class FingeringCorrector:
         self.shm_result = None
         self.WIDTH = shm_cfg.WIDTH
         self.HEIGHT = shm_cfg.HEIGHT
+        self.float_arr_len = (shm_cfg.RESULT_SIZE - 4) // 4
         self.key_layout = ["qwertyuiop", "asdfghjkl", "zxcvbnm"]
         self.key_map = {}
         self.finger_map = {
@@ -43,6 +44,15 @@ class FingeringCorrector:
             print("Process: Shared Memory Result connected.")
         except FileNotFoundError:
             raise FileNotFoundError(f"Shared Memory unavaliable: {shm_cfg.SHM_RESULT_ID}")      
+
+    def read_shm_data(self):
+        if self.shm_result is None:
+            return []
+        
+        try:
+            pass
+        except:
+            pass
 
     def get_pressing_key(self, landmark, width, height):
         if not landmark: 
