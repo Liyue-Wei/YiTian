@@ -71,7 +71,7 @@ class HandDetector:
 
             index = 0
             for hand_lms, hand_info in zip(self.result.multi_hand_landmarks, self.result.multi_handedness):
-                result_arr[index] = 1.0 if hand_info.classification[0].label == 'Left' else 0.0
+                result_arr[index] = 1.0 if hand_info.classification[0].label == 'Right' else 0.0
                 result_arr[index+1] = hand_info.classification[0].score
                 lms_np = np.array([[lm.x, lm.y, lm.z] for lm in hand_lms.landmark], dtype=np.float32)
                 result_arr[index+2 : index+65] = lms_np.flatten()
