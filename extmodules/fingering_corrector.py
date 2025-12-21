@@ -93,7 +93,22 @@ class FingeringCorrector:
         
         target_key = self.anchor_key[self.ak_idx]
         if pressed_key == target_key:
-            pass
+            pos_tuple = (finger_pos['x'], finger_pos['y'])
+            print(f"Process: Captured {target_key} at {pos_tuple}")
+            self.ak_coord[target_key] = pos_tuple
+            self.ak_idx += 1
+
+            if self.ak_idx == len(self.anchor_key):
+                success = self._generate_key_map()
+                if success:
+                    self.is_calibrated = True
+                    print("Process: Calibration successed. Keyboard map generated.")
+                    return True
+                else:
+                    print("Process: Calibration failed. Resetting...")
+                    self.reset_calibration()
+        
+        return False
 
     def get_pressing_key(self, landmark, width, height):
         if not landmark: 
