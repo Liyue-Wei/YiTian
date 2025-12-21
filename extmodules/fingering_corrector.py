@@ -39,6 +39,11 @@ class FingeringCorrector:
             "LEFT_THUMB": 4, "LEFT_INDEX": 8, "LEFT_MIDDLE": 12, "LEFT_RING": 16, "LEFT_PINKY": 20
         } 
 
+        self.anchor_key = ['q', 'p', 'z', 'm']
+        self.ak_coord = {}
+        self.ak_idx = 0
+        self.is_calibrated = False
+
         try:
             self.shm_result = shared_memory.SharedMemory(name=shm_cfg.SHM_RESULT_ID)
             print("Process: Shared Memory Result connected.")
@@ -79,9 +84,9 @@ class FingeringCorrector:
         except Exception as e:
             raise(f"Error: Unexpected error occurred: {e}")
 
+    def key_map_calibration(self, key):
+        pass
+
     def get_pressing_key(self, landmark, width, height):
         if not landmark: 
             return None
-
-    def key_map_calibration(self, key):
-        anchor_key = ['q', 'p', 'z', 'm']
