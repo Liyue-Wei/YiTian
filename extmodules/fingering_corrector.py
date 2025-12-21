@@ -116,6 +116,43 @@ class FingeringCorrector:
         self.is_calibrated = False
         self.key_map = {}
 
+    def _generate_key_map(self):
+        try:
+            src_pts = np.float32([
+                [0, 0],      # q
+                [9, 0],      # p
+                [0.75, 2],   # z
+                [6.75, 2]    # m
+            ])
+
+            dst_pts = np.float32([
+                self.ak_coord['q'],
+                self.ak_coord['p'],
+                self.ak_coord['z'],
+                self.ak_coord['m']
+            ])
+
+            matrix = cv2.getPerspectiveTransform(src_pts, dst_pts)
+            self.key_map = {}
+            key_ideal_coords = {
+                "qwertyuiop": [(i, 0) for i in range(10)],
+                "asdfghjkl": [(i + 0.25, 1) for i in range(9)],
+                "zxcvbnm": [(i + 0.75, 2) for i in range(7)]
+            }
+
+            for row_str, coords in key_ideal_coords.items():
+                ideal_pts = np.float32(coords).reshape(-1, 1, 2)
+                transformed_pts = cv2.perspectiveTransform(ideal_pts, matrix)
+                
+                for i, char in enumerate(row_str):
+                    self.key_map[char] = tuple(transformed_pts[i][0].astype(int))
+            
+            return True
+            
+        except Exception as e:
+            print(f"Process: Unexpected error occurred: {e}")
+            return False
+
     def get_pressing_key(self, landmark, width, height):
         if not landmark: 
             return None
