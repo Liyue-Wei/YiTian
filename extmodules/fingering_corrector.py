@@ -153,14 +153,14 @@ class FingeringCorrector:
             return False
 
     def check_fingering(self, typed_key, hands_data):
-        if not typed_key or typed_key not in self.key_map: 
+        if not typed_key or typed_key not in self.finger_map: 
+            return "No rule", None
+
+        if typed_key not in self.key_map:
             return None, None
             
-        correct_finger_name = self.finger_map.get(typed_key)
-        if not correct_finger_name: 
-            return "No rule", None
-            
-        target_key_pos = self.key_map[typed_key]
+        correct_finger_name = self.finger_map[typed_key]
+        target_key_pos = self.key_map[typed_key]      
         expected_hand_label = "Left" if correct_finger_name.startswith("LEFT") else "Right"
         expected_finger_idx = self.fingertip_indices[correct_finger_name]
         for hand in hands_data:
@@ -190,4 +190,4 @@ class FingeringCorrector:
         if actual_finger_name == correct_finger_name:
             return "Correct", correct_finger_name
         
-        return "Wrong", actual_finger_name[6:]  
+        return "Wrong", actual_finger_name[6:]
