@@ -109,6 +109,12 @@ class FingeringCorrector:
                     self.reset_calibration()
         
         return False
+    
+    def reset_calibration(self):
+        self.ak_idx = 0
+        self.ak_coord = {}
+        self.is_calibrated = False
+        self.key_map = {}
 
     def get_pressing_key(self, landmark, width, height):
         if not landmark: 
