@@ -44,5 +44,11 @@ class FingeringCorrector:
         except FileNotFoundError:
             raise FileNotFoundError(f"Shared Memory unavaliable: {shm_cfg.SHM_RESULT_ID}")      
 
+    def generate_key_map(self):
+        pass
+
+    def get_pressing_key(self):
+        pass
+
     def key_map_calibration(self, key):
         pass
