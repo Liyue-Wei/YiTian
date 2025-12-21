@@ -143,7 +143,6 @@ class FingeringCorrector:
             for row_str, coords in key_ideal_coords.items():
                 ideal_pts = np.float32(coords).reshape(-1, 1, 2)
                 transformed_pts = cv2.perspectiveTransform(ideal_pts, matrix)
-                
                 for i, char in enumerate(row_str):
                     self.key_map[char] = tuple(transformed_pts[i][0].astype(int))
             
