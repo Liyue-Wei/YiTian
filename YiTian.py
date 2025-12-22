@@ -142,6 +142,8 @@ class YiTian:
             self.init_modules()
         except Exception as e:
             raise(f"Process: Unexpected error occurred: {e}")
+        finally:
+            self.quit()
 
     def quit(self):
         print("Process: Quitting...")
