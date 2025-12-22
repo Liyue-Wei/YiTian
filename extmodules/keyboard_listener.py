@@ -33,6 +33,38 @@ class KeyboardListener:
                             self.pressed_key = "BACKSPACE"
                         case keyboard.Key.esc:
                             self.pressed_key = "ESC"
+                        case keyboard.Key.enter:
+                            self.pressed_key = "Enter"
+                        case keyboard.Key.shift | keyboard.Key.shift_l | keyboard.Key.shift_r:
+                            self.pressed_key = "SHIFT"
+                        case keyboard.Key.ctrl | keyboard.Key.ctrl_l | keyboard.Key.ctrl_r:
+                            self.pressed_key = "CTRL"
+                        case keyboard.Key.alt | keyboard.Key.alt_l | keyboard.Key.alt_r | keyboard.Key.alt_gr:
+                            self.pressed_key = "ALT"
+                        case keyboard.Key.caps_lock:
+                            self.pressed_key = "CAPSLOCK"
+                        case keyboard.Key.cmd | keyboard.Key.cmd_l | keyboard.Key.cmd_r:
+                            self.pressed_key = "CMD"
+                        case keyboard.Key.up:
+                            self.pressed_key = "UP"
+                        case keyboard.Key.down:
+                            self.pressed_key = "DOWN"
+                        case keyboard.Key.left:
+                            self.pressed_key = "LEFT"
+                        case keyboard.Key.right:
+                            self.pressed_key = "RIGHT"
+                        case keyboard.Key.delete:
+                            self.pressed_key = "DELETE"
+                        case keyboard.Key.insert:
+                            self.pressed_key = "INSERT"
+                        case keyboard.Key.home:
+                            self.pressed_key = "HOME"
+                        case keyboard.Key.end:
+                            self.pressed_key = "END"
+                        case keyboard.Key.page_up:
+                            self.pressed_key = "PAGE_UP"
+                        case keyboard.Key.page_down:
+                            self.pressed_key = "PAGE_DOWN"
                         case _:
                             pass    # "Invalid" if needed
 
