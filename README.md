@@ -1,4 +1,4 @@
-# 倚天 (YiTian) - 盲打指法輔助器
+# 倚天 (YiTian) - 盲打指法辅助学习工具
 **An open-source software project.**
 ### 改进
 1. 画面切分
