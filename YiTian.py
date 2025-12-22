@@ -110,7 +110,6 @@ class YiTian:
         if not self.ready_event.wait(timeout=15):
             print("Error: Camera initialization timed out.")
             return False
-        return True
         
     def start_hd(self):
         print("Process: Starting Hand Detector.")
@@ -136,9 +135,12 @@ class YiTian:
             return False
         
     def run(self):
-        self.start_cam()
-        self.start_hd()
-        self.init_modules()
+        if not self.start_cam():
+            return False
+        if not self.start_hd():
+            return False
+        if not self.init_modules():
+            return False
 
     def quit(self):
         print("Process: Quitting...")
