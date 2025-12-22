@@ -135,12 +135,13 @@ class YiTian:
             return False
         
     def run(self):
-        if not self.start_cam():
-            return False
-        if not self.start_hd():
-            return False
-        if not self.init_modules():
-            return False
+        print("System: Welcome to YiTian Typing Corrector.\nProcess: Starting process.")
+        try:
+            self.start_cam()
+            self.start_hd()
+            self.init_modules()
+        except Exception as e:
+            raise(f"Process: Unexpected error occurred: {e}")
 
     def quit(self):
         print("Process: Quitting...")
