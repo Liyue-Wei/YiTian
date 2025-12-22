@@ -9,6 +9,7 @@ Licensed under the GNU GPL v3.0 License.
 from extmodules import shm_cfg
 from extmodules import keyboard_listener
 from extmodules import fingering_corrector
+from extmodules import stabilizer
 import multiprocessing
 from multiprocessing import shared_memory
 import sys
@@ -135,7 +136,9 @@ class YiTian:
             return False
         
     def run(self):
-        pass
+        self.start_cam()
+        self.start_hd()
+        self.init_modules()
 
     def quit(self):
         print("Process: Quitting...")
