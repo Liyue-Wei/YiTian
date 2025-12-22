@@ -191,32 +191,3 @@ class FingeringCorrector:
             return "Correct", correct_finger_name
         
         return "Wrong", actual_finger_name[6:]
-    
-'''
-import time
-from extmodules import keyboard_listener
-
-def main():
-    kbl = keyboard_listener.KeyboardListener()
-    print("监听器已启动，请按键... (按 Ctrl+C 退出)")
-
-    try:
-        while True:
-            key = kbl.get_key()
-            if key:
-                print(f"检测到按键: [{key}]")
-                if key == "ESC":
-                    print("检测到 ESC，准备退出...")
-                    break
-            
-            time.sleep(0.01)
-
-    except KeyboardInterrupt:
-        pass
-    finally:
-        print("停止监听...")
-        kbl.stop_listener()
-
-if __name__ == "__main__":
-    main()
-'''
