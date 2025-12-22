@@ -34,7 +34,7 @@ class KeyboardListener:
                         case keyboard.Key.esc:
                             self.pressed_key = "ESC"
                         case keyboard.Key.enter:
-                            self.pressed_key = "Enter"
+                            self.pressed_key = "ENTER"
                         case keyboard.Key.shift | keyboard.Key.shift_l | keyboard.Key.shift_r:
                             self.pressed_key = "SHIFT"
                         case keyboard.Key.ctrl | keyboard.Key.ctrl_l | keyboard.Key.ctrl_r:
