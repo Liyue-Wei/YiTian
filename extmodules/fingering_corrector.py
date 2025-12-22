@@ -184,7 +184,7 @@ class FingeringCorrector:
                     min_dist = dist
                     actual_finger_name = fname
 
-        if min_dist > 60:
+        if min_dist > 80:
             return "Unknown", "Hand too far"
             
         if actual_finger_name == correct_finger_name:
