@@ -190,4 +190,4 @@ class FingeringCorrector:
         if actual_finger_name == correct_finger_name:
             return "Correct", correct_finger_name
         
-        return "Wrong", actual_finger_name[6:]
+        return "Wrong", (actual_finger_name.split('_')[1], correct_finger_name.split('_')[1])
