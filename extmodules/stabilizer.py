@@ -8,7 +8,7 @@ Licensed under the GNU GPL v3.0 License.
 
 import copy
 
-class LandmarkSmoother:
+class Stabilizer:
     def __init__(self, alpha=0.5):
         self.alpha = alpha
         self.prev_landmarks = None
